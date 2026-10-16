@@ -2,7 +2,7 @@ import countriesInfo from '../data/countries-info.json'
 
 const ROOT_LABEL = 'Afrique'
 
-const labelOf = (entry) => countriesInfo[entry.id]?.name ?? entry.id
+const labelOf = (entry) => entry.data?.name ?? countriesInfo[entry.id]?.name ?? entry.id
 
 /**
  * Fil d'Ariane : Afrique › Pays › Région, chaque niveau parent est cliquable.

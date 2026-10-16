@@ -13,7 +13,8 @@
     "coverage": "vitest run --coverage",
     "e2e": "playwright test",
     "prepare:countries": "node scripts/prepare-countries.mjs",
-    "prepare:info": "node scripts/prepare-info.mjs"
+    "prepare:info": "node scripts/prepare-info.mjs",
+    "prepare:boundaries": "node scripts/prepare-boundaries.mjs"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",

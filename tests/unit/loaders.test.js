@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { clearGeoCache, loadAfricaCountries } from '../../src/data/loaders.js'
+import { clearGeoCache, loadAfricaCountries, loadCountryRegions } from '../../src/data/loaders.js'
 
 const topologyText = readFileSync(resolve(__dirname, '../../public/geo/africa.topo.json'), 'utf8')
 
@@ -46,5 +46,30 @@ describe('loadAfricaCountries', () => {
 
     await expect(loadAfricaCountries()).rejects.toThrow()
     await expect(loadAfricaCountries()).resolves.toHaveLength(55)
+  })
+})
+
+describe('loadCountryRegions', () => {
+  const regionsText = readFileSync(resolve(__dirname, '../../public/geo/adm1/CMR.topo.json'), 'utf8')
+
+  beforeEach(() => {
+    clearGeoCache()
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => JSON.parse(regionsText) })))
+  })
+
+  afterEach(() => vi.unstubAllGlobals())
+
+  test('charge les régions d’un pays avec leurs métadonnées', async () => {
+    const { regions, meta } = await loadCountryRegions('CMR')
+
+    expect(fetch).toHaveBeenCalledWith('/geo/adm1/CMR.topo.json')
+    expect(regions).toHaveLength(10)
+    expect(regions.map((r) => r.properties.name)).toContain('Extrême-Nord')
+    expect(meta).toMatchObject({ countryId: 'CMR', type: 'Région' })
+  })
+
+  test('refuse un code pays invalide sans rien télécharger', async () => {
+    await expect(loadCountryRegions('../secret')).rejects.toThrow(/code pays invalide/i)
+    expect(fetch).not.toHaveBeenCalled()
   })
 })

@@ -5,7 +5,7 @@ import { navigationReducer } from './navigation.js'
 export function useMapNavigation() {
   const [path, dispatch] = useReducer(navigationReducer, [])
 
-  const open = useCallback((level, id) => dispatch({ type: 'open', level, id }), [])
+  const open = useCallback((level, id, data) => dispatch({ type: 'open', level, id, data }), [])
   const back = useCallback(() => dispatch({ type: 'back' }), [])
   const goTo = useCallback((depth) => dispatch({ type: 'goTo', depth }), [])
 

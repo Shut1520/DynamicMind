@@ -197,6 +197,50 @@ body {
   opacity: 0.75;
 }
 
+/* Sous ses régions, le pays ouvert garde sa couleur de base : pas de liseré foncé aux frontières. */
+.has-regions .map-layer--country .map-region.is-selected {
+  fill: var(--land);
+}
+
+/* Une région ouverte : le pays dessous s'efface pour que les régions estompées le soient vraiment. */
+.has-region-focus .map-layer--country .map-region.is-selected {
+  fill: transparent;
+}
+
+.map-layer--region .map-region {
+  stroke-width: 0.6;
+}
+
+/* --- Pastille d'état (chargement des régions) --- */
+
+.map-chip {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel-bg);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  animation: tooltip-in 150ms ease-out;
+}
+
+.map-chip button {
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
 .map-outline {
   fill: none;
   stroke: var(--outline);
@@ -514,6 +558,7 @@ body {
   }
 
   .map-tooltip,
+  .map-chip,
   .info-panel,
   .info-panel.is-closing,
   .info-panel__facts {

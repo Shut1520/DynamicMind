@@ -86,3 +86,47 @@ describe('InfoPanel', () => {
     expect(screen.queryByRole('heading', { name: 'Sénégal' })).not.toBeInTheDocument()
   })
 })
+
+describe('InfoPanel — fiche d’une région', () => {
+  const farNorth = {
+    id: 'R1',
+    iso: 'CM-EN',
+    name: 'Extrême-Nord',
+    area: 35015,
+    capitals: ['Maroua'],
+    population: 3142883,
+    populationYear: 2007,
+    countryId: 'CMR',
+    type: 'Région',
+    license: 'Creative Commons Attribution 3.0 License',
+  }
+
+  test('affiche la fiche de la région et son pays', () => {
+    render(<InfoPanel countryId="CMR" region={farNorth} onClose={() => {}} />)
+    const panel = screen.getByRole('complementary', { name: /fiche de la région/i })
+
+    expect(screen.getByRole('heading', { name: 'Extrême-Nord' })).toBeInTheDocument()
+    ;['Région · Cameroun', 'Maroua', /3,1\smillions d'habitants \(2007\)/, /35\s015\skm²/, /\d+\shab\.\/km²/, 'CM-EN'].forEach(
+      (text) => expect(panel).toHaveTextContent(text),
+    )
+    expect(panel).toHaveTextContent(/Creative Commons Attribution 3\.0/)
+  })
+
+  test('omet les informations que la source ne fournit pas', () => {
+    const minimal = { ...farNorth, iso: null, capitals: [], population: null, populationYear: null }
+    render(<InfoPanel countryId="CMR" region={minimal} onClose={() => {}} />)
+    const panel = screen.getByRole('complementary', { name: /fiche de la région/i })
+
+    expect(panel).not.toHaveTextContent('Chef-lieu')
+    expect(panel).not.toHaveTextContent('Population')
+    expect(panel).toHaveTextContent(/35\s015\skm²/)
+  })
+
+  test('revient à la fiche du pays quand on quitte la région', () => {
+    const { rerender } = render(<InfoPanel countryId="CMR" region={farNorth} onClose={() => {}} />)
+
+    rerender(<InfoPanel countryId="CMR" region={null} onClose={() => {}} />)
+
+    expect(screen.getByRole('heading', { name: 'Cameroun' })).toHaveFocus()
+  })
+})

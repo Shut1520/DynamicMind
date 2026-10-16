@@ -2,7 +2,8 @@
 export const LEVELS = Object.freeze(['country', 'region', 'subregion'])
 
 /**
- * @typedef {{ level: 'country' | 'region' | 'subregion', id: string }} NavigationEntry
+ * @typedef {{ level: 'country' | 'region' | 'subregion', id: string, data?: object }} NavigationEntry
+ * `data` transporte ce qu'il faut pour afficher le niveau (ex. la fiche d'une région).
  * @param {NavigationEntry[]} state
  */
 export function navigationReducer(state = [], action) {
@@ -10,7 +11,8 @@ export function navigationReducer(state = [], action) {
     case 'open': {
       const depth = LEVELS.indexOf(action.level)
       if (depth < 0) return state
-      return [...state.slice(0, depth), { level: action.level, id: action.id }]
+      const entry = { level: action.level, id: action.id, ...(action.data ? { data: action.data } : {}) }
+      return [...state.slice(0, depth), entry]
     }
     case 'back':
       return state.slice(0, -1)

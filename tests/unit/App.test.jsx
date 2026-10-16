@@ -21,6 +21,71 @@ describe('App', () => {
   beforeEach(setupMapEnvironment)
   afterEach(teardownMapEnvironment)
 
+  describe('régions', () => {
+    async function zoomedOnCameroon() {
+      const app = await renderApp()
+      await app.user.click(app.country('CMR'))
+      const regions = await screen.findAllByRole('button', { name: /Extrême-Nord|Littoral|Centre/ })
+      const region = (name) => app.map.querySelector(`path[data-level="region"][aria-label="${name}"]`)
+      return { ...app, regions, region }
+    }
+
+    test('affiche les régions du pays ouvert, atteignables au clavier à la place des pays', async () => {
+      const { map } = await zoomedOnCameroon()
+
+      expect(map.querySelectorAll('path[data-level="region"]')).toHaveLength(10)
+      expect(map.querySelectorAll('path[data-level="country"][tabindex="0"]')).toHaveLength(0)
+      expect(map.querySelectorAll('path[data-level="region"][tabindex="0"]')).toHaveLength(10)
+    })
+
+    test('le survol d’une région affiche son infobulle', async () => {
+      const { user, region } = await zoomedOnCameroon()
+
+      await user.hover(region('Extrême-Nord'))
+
+      const tooltip = screen.getByRole('tooltip')
+      expect(tooltip).toHaveTextContent('Extrême-Nord')
+      expect(tooltip).toHaveTextContent('Maroua')
+      expect(region('Extrême-Nord')).toHaveClass('is-active')
+    })
+
+    test('le clic sur une région zoome dessus et ouvre sa fiche', async () => {
+      const { user, region, viewport, breadcrumb } = await zoomedOnCameroon()
+      const countryScale = scaleOf(viewport())
+
+      await user.click(region('Extrême-Nord'))
+
+      expect(scaleOf(viewport())).toBeGreaterThan(countryScale)
+      expect(screen.getByRole('heading', { name: 'Extrême-Nord' })).toBeInTheDocument()
+      expect(within(breadcrumb()).getByText('Extrême-Nord')).toHaveAttribute('aria-current', 'page')
+      expect(within(breadcrumb()).getByRole('button', { name: 'Cameroun' })).toBeInTheDocument()
+      expect(region('Extrême-Nord')).toHaveClass('is-selected')
+      expect(region('Littoral')).toHaveClass('is-dimmed')
+    })
+
+    test('Échap remonte de la région au pays', async () => {
+      const { user, region, breadcrumb } = await zoomedOnCameroon()
+
+      await user.click(region('Littoral'))
+      await user.keyboard('{Escape}')
+
+      expect(screen.getByRole('heading', { name: 'Cameroun' })).toBeInTheDocument()
+      expect(within(breadcrumb()).getByText('Cameroun')).toHaveAttribute('aria-current', 'page')
+      expect(region('Littoral')).not.toHaveClass('is-dimmed')
+    })
+
+    test('cliquer un pays voisin depuis une région change de pays', async () => {
+      const { user, country, region, breadcrumb, map } = await zoomedOnCameroon()
+
+      await user.click(region('Est'))
+      await user.click(country('TCD'))
+
+      expect(within(breadcrumb()).getByText('Tchad')).toHaveAttribute('aria-current', 'page')
+      await screen.findByRole('heading', { name: 'Tchad' })
+      expect(map.querySelector('path[data-level="region"][aria-label="Est"]')).toBeNull()
+    })
+  })
+
   test('affiche le titre, la carte et le fil d’Ariane sur le continent', async () => {
     const { breadcrumb, viewport } = await renderApp()
 

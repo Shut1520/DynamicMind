@@ -7,7 +7,10 @@ import InfoPanel from './ui/InfoPanel.jsx'
 function App() {
   const { path, open, back, goTo } = useMapNavigation()
   const countryId = path.find((entry) => entry.level === 'country')?.id ?? null
+  const regionEntry = path.find((entry) => entry.level === 'region') ?? null
+
   const openCountry = useCallback((id) => open('country', id), [open])
+  const openRegion = useCallback((region) => open('region', region.id, region), [open])
 
   return (
     <div className="app">
@@ -18,9 +21,14 @@ function App() {
       <main className="map-area" aria-label="Carte interactive">
         <div className="map-stage">
           <Breadcrumb path={path} onNavigate={goTo} onBack={back} />
-          <AfricaMap focusId={countryId} selectedId={countryId} onCountryActivate={openCountry} />
+          <AfricaMap
+            countryId={countryId}
+            regionId={regionEntry?.id ?? null}
+            onCountryActivate={openCountry}
+            onRegionActivate={openRegion}
+          />
         </div>
-        <InfoPanel countryId={countryId} onClose={back} />
+        <InfoPanel countryId={countryId} region={regionEntry?.data ?? null} onClose={back} />
       </main>
     </div>
   )

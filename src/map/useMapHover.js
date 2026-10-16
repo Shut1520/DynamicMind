@@ -5,7 +5,11 @@ const ACTIVATION_KEYS = new Set(['Enter', ' '])
 function targetOf(event) {
   const element = event.target.closest?.('[data-id]')
   return element
-    ? { id: element.dataset.id, interactive: element.dataset.interactive !== 'false' }
+    ? {
+        id: element.dataset.id,
+        level: element.dataset.level ?? 'country',
+        interactive: element.dataset.interactive !== 'false',
+      }
     : null
 }
 
@@ -18,7 +22,7 @@ function pointerPosition(event) {
  * Survol de la carte : souris (survol), clavier (focus) et tactile
  * (1er tap = infobulle, 2e tap = activation, comme le « holdAction » d'Interactive Geo Maps).
  *
- * @param {{ onActivate?: (id: string) => void, getAnchor: (id: string) => [number, number] | undefined }} options
+ * @param {{ onActivate?: (id: string, level: string) => void, getAnchor: (id: string) => [number, number] | undefined }} options
  * @returns {{ active: { id: string, x: number, y: number } | null, handlers: object }}
  */
 export function useMapHover({ onActivate, getAnchor }) {
@@ -32,7 +36,7 @@ export function useMapHover({ onActivate, getAnchor }) {
   const clear = () => setActive(null)
 
   const activate = (target) => {
-    if (target?.interactive) onActivate?.(target.id)
+    if (target?.interactive) onActivate?.(target.id, target.level)
   }
 
   const handlers = {

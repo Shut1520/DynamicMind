@@ -1,6 +1,8 @@
 import { feature } from 'topojson-client'
 
-const AFRICA_URL = `${import.meta.env.BASE_URL}geo/africa.topo.json`
+const GEO_BASE = `${import.meta.env.BASE_URL}geo/`
+const AFRICA_URL = `${GEO_BASE}africa.topo.json`
+const COUNTRY_CODE = /^[A-Z]{3}$/
 
 // Une promesse par URL : chaque fichier n'est téléchargé qu'une fois.
 const cache = new Map()
@@ -9,7 +11,7 @@ export function clearGeoCache() {
   cache.clear()
 }
 
-async function fetchFeatures(url, objectName) {
+async function fetchTopology(url, objectName) {
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`Chargement de la carte impossible (${response.status} ${response.statusText})`)
@@ -20,12 +22,12 @@ async function fetchFeatures(url, objectName) {
   if (topology?.type !== 'Topology' || !object) {
     throw new Error(`Format de carte inattendu : objet « ${objectName} » absent de ${url}`)
   }
-  return feature(topology, object).features
+  return { features: feature(topology, object).features, meta: topology.meta ?? null }
 }
 
 function loadOnce(url, objectName) {
   if (!cache.has(url)) {
-    const promise = fetchFeatures(url, objectName).catch((error) => {
+    const promise = fetchTopology(url, objectName).catch((error) => {
       cache.delete(url)
       throw error
     })
@@ -35,6 +37,16 @@ function loadOnce(url, objectName) {
 }
 
 /** Pays d'Afrique (+ territoires contestés) au format GeoJSON. */
-export function loadAfricaCountries() {
-  return loadOnce(AFRICA_URL, 'countries')
+export async function loadAfricaCountries() {
+  const { features } = await loadOnce(AFRICA_URL, 'countries')
+  return features
+}
+
+/** Régions (ADM1) d'un pays, avec les métadonnées de la source (type, licence…). */
+export async function loadCountryRegions(countryId) {
+  if (!COUNTRY_CODE.test(String(countryId))) {
+    throw new Error(`Code pays invalide : ${countryId}`)
+  }
+  const { features, meta } = await loadOnce(`${GEO_BASE}adm1/${countryId}.topo.json`, 'regions')
+  return { regions: features, meta }
 }
