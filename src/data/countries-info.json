@@ -1,0 +1,1476 @@
+{
+  "DZA": {
+    "id": "DZA",
+    "name": "Algérie",
+    "officialName": "République démocratique et populaire d'Algérie",
+    "capitals": [
+      "Alger"
+    ],
+    "population": 47435312,
+    "populationYear": 2025,
+    "area": 2381741,
+    "languages": [
+      "arabe"
+    ],
+    "currencies": [
+      {
+        "code": "DZD",
+        "name": "dinar algérien",
+        "symbol": "د.ج"
+      }
+    ],
+    "callingCode": "+213",
+    "subregion": "Afrique du Nord",
+    "demonym": "Algérien",
+    "flag": "/flags/dza.svg"
+  },
+  "AGO": {
+    "id": "AGO",
+    "name": "Angola",
+    "officialName": "République d'Angola",
+    "capitals": [
+      "Luanda"
+    ],
+    "population": 39040039,
+    "populationYear": 2025,
+    "area": 1246700,
+    "languages": [
+      "portugais"
+    ],
+    "currencies": [
+      {
+        "code": "AOA",
+        "name": "kwanza angolais",
+        "symbol": "Kz"
+      }
+    ],
+    "callingCode": "+244",
+    "subregion": "Afrique centrale",
+    "demonym": "Angolais",
+    "flag": "/flags/ago.svg"
+  },
+  "BEN": {
+    "id": "BEN",
+    "name": "Bénin",
+    "officialName": "République du Bénin",
+    "capitals": [
+      "Porto-Novo"
+    ],
+    "population": 14814460,
+    "populationYear": 2025,
+    "area": 112622,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XOF",
+        "name": "franc CFA (BCEAO)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+229",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Béninois",
+    "flag": "/flags/ben.svg"
+  },
+  "BWA": {
+    "id": "BWA",
+    "name": "Botswana",
+    "officialName": "République du Botswana",
+    "capitals": [
+      "Gaborone"
+    ],
+    "population": 2562122,
+    "populationYear": 2025,
+    "area": 582000,
+    "languages": [
+      "anglais",
+      "tswana"
+    ],
+    "currencies": [
+      {
+        "code": "BWP",
+        "name": "pula botswanais",
+        "symbol": "P"
+      }
+    ],
+    "callingCode": "+267",
+    "subregion": "Afrique australe",
+    "demonym": "Botswanais",
+    "flag": "/flags/bwa.svg"
+  },
+  "BFA": {
+    "id": "BFA",
+    "name": "Burkina Faso",
+    "officialName": "République du Burkina",
+    "capitals": [
+      "Ouagadougou"
+    ],
+    "population": 24074580,
+    "populationYear": 2025,
+    "area": 272967,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XOF",
+        "name": "franc CFA (BCEAO)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+226",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Burkinabé",
+    "flag": "/flags/bfa.svg"
+  },
+  "BDI": {
+    "id": "BDI",
+    "name": "Burundi",
+    "officialName": "République du Burundi",
+    "capitals": [
+      "Gitega"
+    ],
+    "population": 14390003,
+    "populationYear": 2025,
+    "area": 27834,
+    "languages": [
+      "français",
+      "roundi"
+    ],
+    "currencies": [
+      {
+        "code": "BIF",
+        "name": "franc burundais",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+257",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Burundais",
+    "flag": "/flags/bdi.svg"
+  },
+  "CPV": {
+    "id": "CPV",
+    "name": "Cap-Vert",
+    "officialName": "République du Cap-Vert",
+    "capitals": [
+      "Praia"
+    ],
+    "population": 527326,
+    "populationYear": 2025,
+    "area": 4033,
+    "languages": [
+      "portugais"
+    ],
+    "currencies": [
+      {
+        "code": "CVE",
+        "name": "escudo capverdien",
+        "symbol": "Esc"
+      }
+    ],
+    "callingCode": "+238",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Cap-verdien",
+    "flag": "/flags/cpv.svg"
+  },
+  "CMR": {
+    "id": "CMR",
+    "name": "Cameroun",
+    "officialName": "République du Cameroun",
+    "capitals": [
+      "Yaoundé"
+    ],
+    "population": 29879337,
+    "populationYear": 2025,
+    "area": 475442,
+    "languages": [
+      "anglais",
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XAF",
+        "name": "franc CFA (BEAC)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+237",
+    "subregion": "Afrique centrale",
+    "demonym": "Camerounais",
+    "flag": "/flags/cmr.svg"
+  },
+  "CAF": {
+    "id": "CAF",
+    "name": "République centrafricaine",
+    "officialName": "République centrafricaine",
+    "capitals": [
+      "Bangui"
+    ],
+    "population": 5513282,
+    "populationYear": 2025,
+    "area": 622984,
+    "languages": [
+      "français",
+      "sango"
+    ],
+    "currencies": [
+      {
+        "code": "XAF",
+        "name": "franc CFA (BEAC)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+236",
+    "subregion": "Afrique centrale",
+    "demonym": "Centrafricain",
+    "flag": "/flags/caf.svg"
+  },
+  "TCD": {
+    "id": "TCD",
+    "name": "Tchad",
+    "officialName": "République du Tchad",
+    "capitals": [
+      "N'Djaména"
+    ],
+    "population": 21003705,
+    "populationYear": 2025,
+    "area": 1284000,
+    "languages": [
+      "arabe",
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XAF",
+        "name": "franc CFA (BEAC)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+235",
+    "subregion": "Afrique centrale",
+    "demonym": "Tchadien",
+    "flag": "/flags/tcd.svg"
+  },
+  "COM": {
+    "id": "COM",
+    "name": "Comores",
+    "officialName": "Union des Comores",
+    "capitals": [
+      "Moroni"
+    ],
+    "population": 882847,
+    "populationYear": 2025,
+    "area": 1862,
+    "languages": [
+      "arabe",
+      "français",
+      "comorien"
+    ],
+    "currencies": [
+      {
+        "code": "KMF",
+        "name": "franc comorien",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+269",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Comorien",
+    "flag": "/flags/com.svg"
+  },
+  "COG": {
+    "id": "COG",
+    "name": "République du Congo",
+    "officialName": "République du Congo",
+    "capitals": [
+      "Brazzaville"
+    ],
+    "population": 6484437,
+    "populationYear": 2025,
+    "area": 342000,
+    "languages": [
+      "français",
+      "kikongo",
+      "lingala"
+    ],
+    "currencies": [
+      {
+        "code": "XAF",
+        "name": "franc CFA (BEAC)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+242",
+    "subregion": "Afrique centrale",
+    "demonym": "Congolais",
+    "flag": "/flags/cog.svg"
+  },
+  "COD": {
+    "id": "COD",
+    "name": "République démocratique du Congo",
+    "officialName": "République démocratique du Congo",
+    "capitals": [
+      "Kinshasa"
+    ],
+    "population": 112832473,
+    "populationYear": 2025,
+    "area": 2344858,
+    "languages": [
+      "français",
+      "kikongo",
+      "lingala",
+      "luba-kasaï (ciluba)",
+      "swahili"
+    ],
+    "currencies": [
+      {
+        "code": "CDF",
+        "name": "franc congolais",
+        "symbol": "FC"
+      }
+    ],
+    "callingCode": "+243",
+    "subregion": "Afrique centrale",
+    "demonym": "Congolais",
+    "flag": "/flags/cod.svg"
+  },
+  "CIV": {
+    "id": "CIV",
+    "name": "Côte d'Ivoire",
+    "officialName": "République de Côte d' Ivoire",
+    "capitals": [
+      "Yamoussoukro"
+    ],
+    "population": 32711547,
+    "populationYear": 2025,
+    "area": 322463,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XOF",
+        "name": "franc CFA (BCEAO)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+225",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Ivoirien",
+    "flag": "/flags/civ.svg"
+  },
+  "DJI": {
+    "id": "DJI",
+    "name": "Djibouti",
+    "officialName": "République de Djibouti",
+    "capitals": [
+      "Djibouti"
+    ],
+    "population": 1184076,
+    "populationYear": 2025,
+    "area": 23200,
+    "languages": [
+      "arabe",
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "DJF",
+        "name": "franc djiboutien",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+253",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Djiboutien",
+    "flag": "/flags/dji.svg"
+  },
+  "EGY": {
+    "id": "EGY",
+    "name": "Égypte",
+    "officialName": "République arabe d'Égypte",
+    "capitals": [
+      "Le Caire"
+    ],
+    "population": 118365995,
+    "populationYear": 2025,
+    "area": 1002450,
+    "languages": [
+      "arabe"
+    ],
+    "currencies": [
+      {
+        "code": "EGP",
+        "name": "livre égyptienne",
+        "symbol": "£"
+      }
+    ],
+    "callingCode": "+20",
+    "subregion": "Afrique du Nord",
+    "demonym": "Égyptien",
+    "flag": "/flags/egy.svg"
+  },
+  "GNQ": {
+    "id": "GNQ",
+    "name": "Guinée équatoriale",
+    "officialName": "République de Guinée équatoriale",
+    "capitals": [
+      "Malabo"
+    ],
+    "population": 1938431,
+    "populationYear": 2025,
+    "area": 28051,
+    "languages": [
+      "français",
+      "portugais",
+      "espagnol"
+    ],
+    "currencies": [
+      {
+        "code": "XAF",
+        "name": "franc CFA (BEAC)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+240",
+    "subregion": "Afrique centrale",
+    "demonym": "Équato-guinéen",
+    "flag": "/flags/gnq.svg"
+  },
+  "ERI": {
+    "id": "ERI",
+    "name": "Érythrée",
+    "officialName": "État d'Érythrée",
+    "capitals": [
+      "Asmara"
+    ],
+    "population": 3607003,
+    "populationYear": 2025,
+    "area": 117600,
+    "languages": [
+      "arabe",
+      "anglais",
+      "tigrigna"
+    ],
+    "currencies": [
+      {
+        "code": "ERN",
+        "name": "nafka érythréen",
+        "symbol": "Nfk"
+      }
+    ],
+    "callingCode": "+291",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Érythréen",
+    "flag": "/flags/eri.svg"
+  },
+  "SWZ": {
+    "id": "SWZ",
+    "name": "Eswatini",
+    "officialName": "Royaume d’Eswatini",
+    "capitals": [
+      "Lobamba"
+    ],
+    "population": 1256174,
+    "populationYear": 2025,
+    "area": 17364,
+    "languages": [
+      "anglais",
+      "swati"
+    ],
+    "currencies": [
+      {
+        "code": "SZL",
+        "name": "lilangeni swazi",
+        "symbol": "L"
+      },
+      {
+        "code": "ZAR",
+        "name": "rand sud-africain",
+        "symbol": "R"
+      }
+    ],
+    "callingCode": "+268",
+    "subregion": "Afrique australe",
+    "demonym": "Swazie",
+    "flag": "/flags/swz.svg"
+  },
+  "ETH": {
+    "id": "ETH",
+    "name": "Éthiopie",
+    "officialName": "République fédérale démocratique d'Éthiopie",
+    "capitals": [
+      "Addis-Abeba"
+    ],
+    "population": 135472051,
+    "populationYear": 2025,
+    "area": 1104300,
+    "languages": [
+      "amharique"
+    ],
+    "currencies": [
+      {
+        "code": "ETB",
+        "name": "birr éthiopien",
+        "symbol": "Br"
+      }
+    ],
+    "callingCode": "+251",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Éthiopien",
+    "flag": "/flags/eth.svg"
+  },
+  "GAB": {
+    "id": "GAB",
+    "name": "Gabon",
+    "officialName": "République gabonaise",
+    "capitals": [
+      "Libreville"
+    ],
+    "population": 2593130,
+    "populationYear": 2025,
+    "area": 267668,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XAF",
+        "name": "franc CFA (BEAC)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+241",
+    "subregion": "Afrique centrale",
+    "demonym": "Gabonais",
+    "flag": "/flags/gab.svg"
+  },
+  "GMB": {
+    "id": "GMB",
+    "name": "Gambie",
+    "officialName": "République de Gambie",
+    "capitals": [
+      "Banjul"
+    ],
+    "population": 2822093,
+    "populationYear": 2025,
+    "area": 10689,
+    "languages": [
+      "anglais"
+    ],
+    "currencies": [
+      {
+        "code": "GMD",
+        "name": "dalasi gambien",
+        "symbol": "D"
+      }
+    ],
+    "callingCode": "+220",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Gambien",
+    "flag": "/flags/gmb.svg"
+  },
+  "GHA": {
+    "id": "GHA",
+    "name": "Ghana",
+    "officialName": "République du Ghana",
+    "capitals": [
+      "Accra"
+    ],
+    "population": 35064272,
+    "populationYear": 2025,
+    "area": 238533,
+    "languages": [
+      "anglais"
+    ],
+    "currencies": [
+      {
+        "code": "GHS",
+        "name": "cédi ghanéen",
+        "symbol": "₵"
+      }
+    ],
+    "callingCode": "+233",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Ghanéen",
+    "flag": "/flags/gha.svg"
+  },
+  "GIN": {
+    "id": "GIN",
+    "name": "Guinée",
+    "officialName": "République de Guinée",
+    "capitals": [
+      "Conakry"
+    ],
+    "population": 15099727,
+    "populationYear": 2025,
+    "area": 245857,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "GNF",
+        "name": "franc guinéen",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+224",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Guinéen",
+    "flag": "/flags/gin.svg"
+  },
+  "GNB": {
+    "id": "GNB",
+    "name": "Guinée-Bissau",
+    "officialName": "République de Guinée-Bissau",
+    "capitals": [
+      "Bissau"
+    ],
+    "population": 2249515,
+    "populationYear": 2025,
+    "area": 36125,
+    "languages": [
+      "portugais",
+      "créole de Haute-Guinée"
+    ],
+    "currencies": [
+      {
+        "code": "XOF",
+        "name": "franc CFA (BCEAO)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+245",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Bissau-Guinéen",
+    "flag": "/flags/gnb.svg"
+  },
+  "KEN": {
+    "id": "KEN",
+    "name": "Kenya",
+    "officialName": "République du Kenya",
+    "capitals": [
+      "Nairobi"
+    ],
+    "population": 57532493,
+    "populationYear": 2025,
+    "area": 580367,
+    "languages": [
+      "anglais",
+      "swahili"
+    ],
+    "currencies": [
+      {
+        "code": "KES",
+        "name": "shilling kényan",
+        "symbol": "Sh"
+      }
+    ],
+    "callingCode": "+254",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Kényan",
+    "flag": "/flags/ken.svg"
+  },
+  "LSO": {
+    "id": "LSO",
+    "name": "Lesotho",
+    "officialName": "Royaume du Lesotho",
+    "capitals": [
+      "Maseru"
+    ],
+    "population": 2363325,
+    "populationYear": 2025,
+    "area": 30355,
+    "languages": [
+      "anglais",
+      "sotho du Sud"
+    ],
+    "currencies": [
+      {
+        "code": "LSL",
+        "name": "loti lesothan",
+        "symbol": "L"
+      },
+      {
+        "code": "ZAR",
+        "name": "rand sud-africain",
+        "symbol": "R"
+      }
+    ],
+    "callingCode": "+266",
+    "subregion": "Afrique australe",
+    "demonym": "Lésothien",
+    "flag": "/flags/lso.svg"
+  },
+  "LBR": {
+    "id": "LBR",
+    "name": "Liberia",
+    "officialName": "République du Libéria",
+    "capitals": [
+      "Monrovia"
+    ],
+    "population": 5731206,
+    "populationYear": 2025,
+    "area": 111369,
+    "languages": [
+      "anglais"
+    ],
+    "currencies": [
+      {
+        "code": "LRD",
+        "name": "dollar libérien",
+        "symbol": "$"
+      }
+    ],
+    "callingCode": "+231",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Libérien",
+    "flag": "/flags/lbr.svg"
+  },
+  "LBY": {
+    "id": "LBY",
+    "name": "Libye",
+    "officialName": "Grande République arabe libyenne populaire et socialiste",
+    "capitals": [
+      "Tripoli"
+    ],
+    "population": 7458555,
+    "populationYear": 2025,
+    "area": 1759540,
+    "languages": [
+      "arabe"
+    ],
+    "currencies": [
+      {
+        "code": "LYD",
+        "name": "dinar libyen",
+        "symbol": "ل.د"
+      }
+    ],
+    "callingCode": "+218",
+    "subregion": "Afrique du Nord",
+    "demonym": "Libyen",
+    "flag": "/flags/lby.svg"
+  },
+  "MDG": {
+    "id": "MDG",
+    "name": "Madagascar",
+    "officialName": "République de Madagascar",
+    "capitals": [
+      "Antananarivo"
+    ],
+    "population": 32740678,
+    "populationYear": 2025,
+    "area": 587041,
+    "languages": [
+      "français",
+      "malgache"
+    ],
+    "currencies": [
+      {
+        "code": "MGA",
+        "name": "ariary malgache",
+        "symbol": "Ar"
+      }
+    ],
+    "callingCode": "+261",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Malgache",
+    "flag": "/flags/mdg.svg"
+  },
+  "MWI": {
+    "id": "MWI",
+    "name": "Malawi",
+    "officialName": "République du Malawi",
+    "capitals": [
+      "Lilongwe"
+    ],
+    "population": 22216120,
+    "populationYear": 2025,
+    "area": 118484,
+    "languages": [
+      "anglais",
+      "chewa"
+    ],
+    "currencies": [
+      {
+        "code": "MWK",
+        "name": "kwacha malawite",
+        "symbol": "MK"
+      }
+    ],
+    "callingCode": "+265",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Malawien",
+    "flag": "/flags/mwi.svg"
+  },
+  "MLI": {
+    "id": "MLI",
+    "name": "Mali",
+    "officialName": "République du Mali",
+    "capitals": [
+      "Bamako"
+    ],
+    "population": 25198821,
+    "populationYear": 2025,
+    "area": 1240192,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XOF",
+        "name": "franc CFA (BCEAO)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+223",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Malien",
+    "flag": "/flags/mli.svg"
+  },
+  "MRT": {
+    "id": "MRT",
+    "name": "Mauritanie",
+    "officialName": "République islamique de Mauritanie",
+    "capitals": [
+      "Nouakchott"
+    ],
+    "population": 5315065,
+    "populationYear": 2025,
+    "area": 1030700,
+    "languages": [
+      "arabe"
+    ],
+    "currencies": [
+      {
+        "code": "MRU",
+        "name": "ouguiya mauritanien",
+        "symbol": "UM"
+      }
+    ],
+    "callingCode": "+222",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Mauritanien",
+    "flag": "/flags/mrt.svg"
+  },
+  "MUS": {
+    "id": "MUS",
+    "name": "Maurice",
+    "officialName": "République de Maurice",
+    "capitals": [
+      "Port-Louis"
+    ],
+    "population": 1243741,
+    "populationYear": 2025,
+    "area": 2040,
+    "languages": [
+      "anglais",
+      "français",
+      "créole mauricien"
+    ],
+    "currencies": [
+      {
+        "code": "MUR",
+        "name": "roupie mauricienne",
+        "symbol": "₨"
+      }
+    ],
+    "callingCode": "+230",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Mauricien",
+    "flag": "/flags/mus.svg"
+  },
+  "MAR": {
+    "id": "MAR",
+    "name": "Maroc",
+    "officialName": "Royaume du Maroc",
+    "capitals": [
+      "Rabat"
+    ],
+    "population": 38430770,
+    "populationYear": 2025,
+    "area": 446550,
+    "languages": [
+      "arabe",
+      "berbère"
+    ],
+    "currencies": [
+      {
+        "code": "MAD",
+        "name": "dirham marocain",
+        "symbol": "د.م."
+      }
+    ],
+    "callingCode": "+212",
+    "subregion": "Afrique du Nord",
+    "demonym": "Marocain",
+    "flag": "/flags/mar.svg"
+  },
+  "MOZ": {
+    "id": "MOZ",
+    "name": "Mozambique",
+    "officialName": "République du Mozambique",
+    "capitals": [
+      "Maputo"
+    ],
+    "population": 35631653,
+    "populationYear": 2025,
+    "area": 801590,
+    "languages": [
+      "portugais"
+    ],
+    "currencies": [
+      {
+        "code": "MZN",
+        "name": "metical mozambicain",
+        "symbol": "MT"
+      }
+    ],
+    "callingCode": "+258",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Mozambicain",
+    "flag": "/flags/moz.svg"
+  },
+  "NAM": {
+    "id": "NAM",
+    "name": "Namibie",
+    "officialName": "République de Namibie",
+    "capitals": [
+      "Windhoek"
+    ],
+    "population": 3092816,
+    "populationYear": 2025,
+    "area": 825615,
+    "languages": [
+      "afrikaans",
+      "allemand",
+      "anglais",
+      "héréro",
+      "khoekhoe",
+      "kwangali",
+      "lozi",
+      "ndonga",
+      "tswana"
+    ],
+    "currencies": [
+      {
+        "code": "NAD",
+        "name": "dollar namibien",
+        "symbol": "$"
+      },
+      {
+        "code": "ZAR",
+        "name": "rand sud-africain",
+        "symbol": "R"
+      }
+    ],
+    "callingCode": "+264",
+    "subregion": "Afrique australe",
+    "demonym": "Namibien",
+    "flag": "/flags/nam.svg"
+  },
+  "NER": {
+    "id": "NER",
+    "name": "Niger",
+    "officialName": "République du Niger",
+    "capitals": [
+      "Niamey"
+    ],
+    "population": 27917831,
+    "populationYear": 2025,
+    "area": 1267000,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XOF",
+        "name": "franc CFA (BCEAO)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+227",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Nigérien",
+    "flag": "/flags/ner.svg"
+  },
+  "NGA": {
+    "id": "NGA",
+    "name": "Nigeria",
+    "officialName": "République fédérale du Nigeria",
+    "capitals": [
+      "Abuja"
+    ],
+    "population": 237527782,
+    "populationYear": 2025,
+    "area": 923768,
+    "languages": [
+      "anglais"
+    ],
+    "currencies": [
+      {
+        "code": "NGN",
+        "name": "naira nigérian",
+        "symbol": "₦"
+      }
+    ],
+    "callingCode": "+234",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Nigérian",
+    "flag": "/flags/nga.svg"
+  },
+  "RWA": {
+    "id": "RWA",
+    "name": "Rwanda",
+    "officialName": "République rwandaise",
+    "capitals": [
+      "Kigali"
+    ],
+    "population": 14569341,
+    "populationYear": 2025,
+    "area": 26338,
+    "languages": [
+      "anglais",
+      "français",
+      "kinyarwanda"
+    ],
+    "currencies": [
+      {
+        "code": "RWF",
+        "name": "franc rwandais",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+250",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Rwandais",
+    "flag": "/flags/rwa.svg"
+  },
+  "STP": {
+    "id": "STP",
+    "name": "Sao Tomé-et-Principe",
+    "officialName": "République démocratique de São Tomé et Príncipe",
+    "capitals": [
+      "São Tomé"
+    ],
+    "population": 240254,
+    "populationYear": 2025,
+    "area": 964,
+    "languages": [
+      "portugais"
+    ],
+    "currencies": [
+      {
+        "code": "STN",
+        "name": "dobra santoméen",
+        "symbol": "Db"
+      }
+    ],
+    "callingCode": "+239",
+    "subregion": "Afrique centrale",
+    "demonym": "Santoméen",
+    "flag": "/flags/stp.svg"
+  },
+  "SEN": {
+    "id": "SEN",
+    "name": "Sénégal",
+    "officialName": "République du Sénégal",
+    "capitals": [
+      "Dakar"
+    ],
+    "population": 18931966,
+    "populationYear": 2025,
+    "area": 196722,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XOF",
+        "name": "franc CFA (BCEAO)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+221",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Sénégalais",
+    "flag": "/flags/sen.svg"
+  },
+  "SYC": {
+    "id": "SYC",
+    "name": "Seychelles",
+    "officialName": "République des Seychelles",
+    "capitals": [
+      "Victoria"
+    ],
+    "population": 122730,
+    "populationYear": 2025,
+    "area": 452,
+    "languages": [
+      "créole seychellois",
+      "anglais",
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "SCR",
+        "name": "roupie des Seychelles",
+        "symbol": "₨"
+      }
+    ],
+    "callingCode": "+248",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Seychellois",
+    "flag": "/flags/syc.svg"
+  },
+  "SLE": {
+    "id": "SLE",
+    "name": "Sierra Leone",
+    "officialName": "République de Sierra Leone",
+    "capitals": [
+      "Freetown"
+    ],
+    "population": 8819794,
+    "populationYear": 2025,
+    "area": 71740,
+    "languages": [
+      "anglais"
+    ],
+    "currencies": [
+      {
+        "code": "SLE",
+        "name": "leone sierra-léonais",
+        "symbol": "Le"
+      }
+    ],
+    "callingCode": "+232",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Sierra-leonais",
+    "flag": "/flags/sle.svg"
+  },
+  "SOM": {
+    "id": "SOM",
+    "name": "Somalie",
+    "officialName": "République fédérale de Somalie",
+    "capitals": [
+      "Mogadiscio"
+    ],
+    "population": 19654739,
+    "populationYear": 2025,
+    "area": 637657,
+    "languages": [
+      "arabe",
+      "somali"
+    ],
+    "currencies": [
+      {
+        "code": "SOS",
+        "name": "shilling somalien",
+        "symbol": "Sh"
+      }
+    ],
+    "callingCode": "+252",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Somalien",
+    "flag": "/flags/som.svg"
+  },
+  "ZAF": {
+    "id": "ZAF",
+    "name": "Afrique du Sud",
+    "officialName": "République d'Afrique du Sud",
+    "capitals": [
+      "Pretoria",
+      "Bloemfontein",
+      "Le Cap"
+    ],
+    "population": 64747319,
+    "populationYear": 2025,
+    "area": 1221037,
+    "languages": [
+      "afrikaans",
+      "anglais",
+      "ndébélé du Sud",
+      "sotho du Nord",
+      "sotho du Sud",
+      "swati",
+      "tswana",
+      "tsonga",
+      "venda",
+      "xhosa",
+      "zoulou"
+    ],
+    "currencies": [
+      {
+        "code": "ZAR",
+        "name": "rand sud-africain",
+        "symbol": "R"
+      }
+    ],
+    "callingCode": "+27",
+    "subregion": "Afrique australe",
+    "demonym": "Sud-africain",
+    "flag": "/flags/zaf.svg"
+  },
+  "SSD": {
+    "id": "SSD",
+    "name": "Soudan du Sud",
+    "officialName": "République du Soudan du Sud",
+    "capitals": [
+      "Djouba"
+    ],
+    "population": 12188788,
+    "populationYear": 2025,
+    "area": 619745,
+    "languages": [
+      "anglais"
+    ],
+    "currencies": [
+      {
+        "code": "SSP",
+        "name": "livre sud-soudanaise",
+        "symbol": "£"
+      }
+    ],
+    "callingCode": "+211",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Sud-Soudanais",
+    "flag": "/flags/ssd.svg"
+  },
+  "SDN": {
+    "id": "SDN",
+    "name": "Soudan",
+    "officialName": "République du Soudan",
+    "capitals": [
+      "Khartoum"
+    ],
+    "population": 51662147,
+    "populationYear": 2025,
+    "area": 1886068,
+    "languages": [
+      "arabe",
+      "anglais"
+    ],
+    "currencies": [
+      {
+        "code": "SDG",
+        "name": "livre soudanaise",
+        "symbol": "PT"
+      }
+    ],
+    "callingCode": "+249",
+    "subregion": "Afrique du Nord",
+    "demonym": "Soudanais",
+    "flag": "/flags/sdn.svg"
+  },
+  "TZA": {
+    "id": "TZA",
+    "name": "Tanzanie",
+    "officialName": "République unie de Tanzanie",
+    "capitals": [
+      "Dodoma"
+    ],
+    "population": 70545865,
+    "populationYear": 2025,
+    "area": 945087,
+    "languages": [
+      "anglais",
+      "swahili"
+    ],
+    "currencies": [
+      {
+        "code": "TZS",
+        "name": "shilling tanzanien",
+        "symbol": "Sh"
+      }
+    ],
+    "callingCode": "+255",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Tanzanien",
+    "flag": "/flags/tza.svg"
+  },
+  "TGO": {
+    "id": "TGO",
+    "name": "Togo",
+    "officialName": "République togolaise",
+    "capitals": [
+      "Lomé"
+    ],
+    "population": 8591626,
+    "populationYear": 2025,
+    "area": 56785,
+    "languages": [
+      "français"
+    ],
+    "currencies": [
+      {
+        "code": "XOF",
+        "name": "franc CFA (BCEAO)",
+        "symbol": "Fr"
+      }
+    ],
+    "callingCode": "+228",
+    "subregion": "Afrique de l'Ouest",
+    "demonym": "Togolais",
+    "flag": "/flags/tgo.svg"
+  },
+  "TUN": {
+    "id": "TUN",
+    "name": "Tunisie",
+    "officialName": "République tunisienne",
+    "capitals": [
+      "Tunis"
+    ],
+    "population": 12348573,
+    "populationYear": 2025,
+    "area": 163610,
+    "languages": [
+      "arabe"
+    ],
+    "currencies": [
+      {
+        "code": "TND",
+        "name": "dinar tunisien",
+        "symbol": "د.ت"
+      }
+    ],
+    "callingCode": "+216",
+    "subregion": "Afrique du Nord",
+    "demonym": "Tunisien",
+    "flag": "/flags/tun.svg"
+  },
+  "UGA": {
+    "id": "UGA",
+    "name": "Ouganda",
+    "officialName": "République de l'Ouganda",
+    "capitals": [
+      "Kampala"
+    ],
+    "population": 51384894,
+    "populationYear": 2025,
+    "area": 241550,
+    "languages": [
+      "anglais",
+      "swahili"
+    ],
+    "currencies": [
+      {
+        "code": "UGX",
+        "name": "shilling ougandais",
+        "symbol": "Sh"
+      }
+    ],
+    "callingCode": "+256",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Ougandais",
+    "flag": "/flags/uga.svg"
+  },
+  "ZMB": {
+    "id": "ZMB",
+    "name": "Zambie",
+    "officialName": "République de Zambie",
+    "capitals": [
+      "Lusaka"
+    ],
+    "population": 21913874,
+    "populationYear": 2025,
+    "area": 752612,
+    "languages": [
+      "anglais"
+    ],
+    "currencies": [
+      {
+        "code": "ZMW",
+        "name": "kwacha zambien",
+        "symbol": "ZK"
+      }
+    ],
+    "callingCode": "+260",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Zambien",
+    "flag": "/flags/zmb.svg"
+  },
+  "ZWE": {
+    "id": "ZWE",
+    "name": "Zimbabwe",
+    "officialName": "République du Zimbabwe",
+    "capitals": [
+      "Harare"
+    ],
+    "population": 16950795,
+    "populationYear": 2025,
+    "area": 390757,
+    "languages": [
+      "chibarwe",
+      "anglais",
+      "kalanga",
+      "langues khoïsan",
+      "ndau",
+      "ndébélé du Nord",
+      "chewa",
+      "shona",
+      "sotho du Sud",
+      "tonga",
+      "tswana",
+      "tsonga",
+      "venda",
+      "xhosa",
+      "langue des signes zimbabwéenne"
+    ],
+    "currencies": [
+      {
+        "code": "BWP",
+        "name": "pula botswanais",
+        "symbol": "P"
+      },
+      {
+        "code": "CNY",
+        "name": "yuan renminbi chinois",
+        "symbol": "¥"
+      },
+      {
+        "code": "EUR",
+        "name": "euro",
+        "symbol": "€"
+      },
+      {
+        "code": "GBP",
+        "name": "livre sterling",
+        "symbol": "£"
+      },
+      {
+        "code": "INR",
+        "name": "roupie indienne",
+        "symbol": "₹"
+      },
+      {
+        "code": "JPY",
+        "name": "yen japonais",
+        "symbol": "¥"
+      },
+      {
+        "code": "USD",
+        "name": "dollar des États-Unis",
+        "symbol": "$"
+      },
+      {
+        "code": "ZAR",
+        "name": "rand sud-africain",
+        "symbol": "Rs"
+      },
+      {
+        "code": "ZWB",
+        "name": "obligations zimbabwéennes",
+        "symbol": "$"
+      }
+    ],
+    "callingCode": "+263",
+    "subregion": "Afrique de l'Est",
+    "demonym": "Zimbabwéen",
+    "flag": "/flags/zwe.svg"
+  }
+}
