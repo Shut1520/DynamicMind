@@ -11,7 +11,7 @@ export default defineConfig({
     include: ['tests/unit/**/*.test.{js,jsx}'],
     coverage: {
       provider: 'v8',
-      include: ['src/**/*.{js,jsx}'],
+      include: ['src/**/*.{js,jsx}', 'scripts/lib/**/*.mjs'],
       exclude: ['src/main.jsx'],
       thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
     },

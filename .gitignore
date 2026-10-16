@@ -27,3 +27,6 @@ dist-ssr
 coverage
 test-results
 playwright-report
+
+# Données sources téléchargées (régénérables)
+.cache
