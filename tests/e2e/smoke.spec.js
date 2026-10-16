@@ -18,7 +18,7 @@ for (const viewport of VIEWPORTS) {
     await page.setViewportSize(viewport)
     await page.goto('/')
 
-    const map = page.getByRole('img', { name: /carte de l'afrique/i })
+    const map = page.getByRole('group', { name: /carte de l'afrique/i })
     await expect(map).toBeVisible()
     await expect(map.locator('path.map-region')).toHaveCount(55)
 
