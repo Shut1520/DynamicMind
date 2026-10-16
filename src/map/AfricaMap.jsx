@@ -8,8 +8,11 @@ import { useAfricaCountries } from './useAfricaCountries.js'
 import { useElementSize } from './useElementSize.js'
 import { useMapHover } from './useMapHover.js'
 import { useProjection } from './useProjection.js'
+import { useZoomTransition } from './useZoomTransition.js'
+import { IDENTITY, fitTransform, freeArea } from './zoom.js'
 
 const TOOLTIP_ID = 'africa-map-tooltip'
+const FOCUS_PADDING = 32
 
 function toShapes(countries, path) {
   return countries.map((feature) => ({
@@ -18,6 +21,7 @@ function toShapes(countries, path) {
     interactive: feature.properties.interactive,
     d: path(feature),
     centroid: path.centroid(feature),
+    bounds: path.bounds(feature),
   }))
 }
 
@@ -35,19 +39,41 @@ function MapStatus({ status, onRetry }) {
   )
 }
 
-/** Carte de l'Afrique : survol, infobulle, clavier et tactile. */
-function AfricaMap({ selectedId = null, onCountryActivate }) {
+/** Géométries de la carte, calculées une fois par projection. */
+function useCountryShapes(countries, geo) {
+  return useMemo(() => {
+    const shapes = geo ? toShapes(countries, geo.path) : []
+    return {
+      shapes,
+      shapesById: new Map(shapes.map((shape) => [shape.id, shape])),
+      markers: geo ? findSmallFeatures(countries, geo.path) : [],
+    }
+  }, [countries, geo])
+}
+
+/**
+ * Carte de l'Afrique : survol, infobulle, clavier, tactile,
+ * et zoom animé sur le pays `focusId` (cadré à gauche du panneau d'infos).
+ */
+function AfricaMap({ focusId = null, selectedId = null, onCountryActivate }) {
   const [containerRef, size] = useElementSize()
   const geo = useProjection(size.width, size.height)
   const { status, countries, retry } = useAfricaCountries()
+  const { shapes, shapesById, markers } = useCountryShapes(countries, geo)
 
-  const shapes = useMemo(() => (geo ? toShapes(countries, geo.path) : []), [countries, geo])
-  const markers = useMemo(() => (geo ? findSmallFeatures(countries, geo.path) : []), [countries, geo])
-  const shapesById = useMemo(() => new Map(shapes.map((shape) => [shape.id, shape])), [shapes])
+  const focusShape = focusId ? shapesById.get(focusId) : undefined
+  const target = useMemo(
+    () => (focusShape ? fitTransform(focusShape.bounds, freeArea(size, true), { padding: FOCUS_PADDING }) : IDENTITY),
+    [focusShape, size],
+  )
+  const view = useZoomTransition(target, size)
 
   const { active, handlers } = useMapHover({
     onActivate: onCountryActivate,
-    getAnchor: (id) => shapesById.get(id)?.centroid,
+    getAnchor: (id) => {
+      const centroid = shapesById.get(id)?.centroid
+      return centroid && [centroid[0] * view.k + view.x, centroid[1] * view.k + view.y]
+    },
   })
   const activeShape = active ? shapesById.get(active.id) : undefined
   const activeId = activeShape?.id ?? null
@@ -58,16 +84,24 @@ function AfricaMap({ selectedId = null, onCountryActivate }) {
 
       {status === 'ready' && geo && (
         <svg
-          className="africa-map__svg"
+          className={focusId ? 'africa-map__svg is-zoomed' : 'africa-map__svg'}
           viewBox={`0 0 ${size.width} ${size.height}`}
           role="group"
           aria-labelledby="africa-map-title"
           {...handlers}
         >
           <title id="africa-map-title">Carte de l&apos;Afrique</title>
-          <MapLayer shapes={shapes} activeId={activeId} selectedId={selectedId} describedBy={TOOLTIP_ID} />
-          {activeShape?.interactive && <path className="map-outline" d={activeShape.d} />}
-          <MarkerLayer markers={markers} activeId={activeId} selectedId={selectedId} />
+          <g className="map-viewport" transform={`translate(${view.x},${view.y}) scale(${view.k})`}>
+            <MapLayer
+              shapes={shapes}
+              activeId={activeId}
+              selectedId={selectedId}
+              focusId={focusId}
+              describedBy={TOOLTIP_ID}
+            />
+            {activeShape?.interactive && <path className="map-outline" d={activeShape.d} />}
+            {!focusId && <MarkerLayer markers={markers} activeId={activeId} selectedId={selectedId} scale={view.k} />}
+          </g>
         </svg>
       )}
 

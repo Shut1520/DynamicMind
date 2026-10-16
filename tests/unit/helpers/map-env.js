@@ -15,10 +15,14 @@ class FakeResizeObserver {
   disconnect() {}
 }
 
-/** Prépare jsdom pour afficher la carte : taille du conteneur + fichier TopoJSON servi par fetch. */
+/**
+ * Prépare jsdom pour afficher la carte : taille du conteneur, fichier TopoJSON servi par fetch,
+ * et « animations réduites » pour que le zoom soit instantané (donc testable sans attendre).
+ */
 export function setupMapEnvironment() {
   clearGeoCache()
   vi.stubGlobal('ResizeObserver', FakeResizeObserver)
+  vi.stubGlobal('matchMedia', (query) => ({ matches: query.includes('reduce') }))
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => ({ ok: true, json: async () => JSON.parse(topologyText) })),

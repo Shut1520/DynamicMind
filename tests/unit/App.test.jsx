@@ -1,69 +1,112 @@
-import { act, render, screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { act, render, screen, waitForElementToBeRemoved, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../../src/App.jsx'
 import { setupMapEnvironment, teardownMapEnvironment } from './helpers/map-env.js'
+
+const PANEL = /fiche du pays/i
 
 async function renderApp() {
   const user = userEvent.setup()
   render(<App />)
   const map = await screen.findByRole('group', { name: /carte de l'afrique/i })
   const country = (id) => map.querySelector(`path[data-id="${id}"]`)
-  return { user, map, country }
+  const viewport = () => map.querySelector('g.map-viewport')
+  const breadcrumb = () => screen.getByRole('navigation', { name: /fil d'ariane/i })
+  return { user, map, country, viewport, breadcrumb }
 }
+
+const scaleOf = (element) => Number(/scale\(([\d.]+)\)/.exec(element.getAttribute('transform'))[1])
 
 describe('App', () => {
   beforeEach(setupMapEnvironment)
   afterEach(teardownMapEnvironment)
 
-  test('affiche le titre et la zone de carte', async () => {
-    await renderApp()
+  test('affiche le titre, la carte et le fil d’Ariane sur le continent', async () => {
+    const { breadcrumb, viewport } = await renderApp()
 
     expect(screen.getByRole('heading', { name: /carte de l'afrique/i })).toBeInTheDocument()
     expect(screen.getByRole('main', { name: /carte interactive/i })).toBeInTheDocument()
+    expect(within(breadcrumb()).getByText('Afrique')).toHaveAttribute('aria-current', 'page')
+    expect(scaleOf(viewport())).toBe(1)
   })
 
-  test('ouvre la fiche du pays cliqué et le garde en surbrillance', async () => {
-    const { user, country } = await renderApp()
+  describe('entrer dans un pays', () => {
+    test('zoome sur le pays, estompe les autres et ouvre sa fiche', async () => {
+      const { user, country, viewport, breadcrumb } = await renderApp()
 
-    await user.click(country('SEN'))
+      await user.click(country('SEN'))
 
-    expect(screen.getByRole('complementary', { name: /fiche du pays/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Sénégal' })).toBeInTheDocument()
-    expect(country('SEN')).toHaveClass('is-selected')
+      expect(scaleOf(viewport())).toBeGreaterThan(3)
+      expect(country('SEN')).toHaveClass('is-selected')
+      expect(country('SEN')).not.toHaveClass('is-dimmed')
+      expect(country('MLI')).toHaveClass('is-dimmed')
+      expect(screen.getByRole('complementary', { name: PANEL })).toBeInTheDocument()
+      expect(within(breadcrumb()).getByRole('button', { name: 'Afrique' })).toBeInTheDocument()
+      expect(within(breadcrumb()).getByText('Sénégal')).toHaveAttribute('aria-current', 'page')
+    })
+
+    test('masque les repères des petites îles une fois zoomé', async () => {
+      const { user, map, country } = await renderApp()
+
+      await user.click(country('SEN'))
+
+      expect(map.querySelectorAll('circle.map-marker')).toHaveLength(0)
+    })
+
+    test('passe directement à un pays voisin en cliquant dessus', async () => {
+      const { user, country, breadcrumb } = await renderApp()
+
+      await user.click(country('SEN'))
+      await user.click(country('MLI'))
+
+      expect(within(breadcrumb()).getByText('Mali')).toHaveAttribute('aria-current', 'page')
+      expect(screen.getByRole('heading', { name: 'Mali' })).toBeInTheDocument()
+      expect(country('SEN')).toHaveClass('is-dimmed')
+    })
   })
 
-  test('remplace la fiche quand on clique un autre pays', async () => {
-    const { user, country } = await renderApp()
+  describe('revenir au continent', () => {
+    async function zoomedOnSenegal() {
+      const app = await renderApp()
+      await app.user.click(app.country('SEN'))
+      return app
+    }
 
-    await user.click(country('SEN'))
-    await user.click(country('MLI'))
+    async function expectBackOnContinent({ viewport, country, breadcrumb }) {
+      await waitForElementToBeRemoved(() => screen.queryByRole('complementary', { name: PANEL }))
+      expect(scaleOf(viewport())).toBe(1)
+      expect(country('MLI')).not.toHaveClass('is-dimmed')
+      expect(country('SEN')).not.toHaveClass('is-selected')
+      expect(within(breadcrumb()).getByText('Afrique')).toHaveAttribute('aria-current', 'page')
+    }
 
-    expect(screen.getByRole('heading', { name: 'Mali' })).toBeInTheDocument()
-    expect(country('SEN')).not.toHaveClass('is-selected')
-    expect(country('MLI')).toHaveClass('is-selected')
-  })
+    test('par le fil d’Ariane', async () => {
+      const app = await zoomedOnSenegal()
 
-  test('ferme la fiche avec ✕ et retire la sélection', async () => {
-    const { user, country } = await renderApp()
+      await app.user.click(within(app.breadcrumb()).getByRole('button', { name: 'Afrique' }))
 
-    await user.click(country('SEN'))
-    await user.click(screen.getByRole('button', { name: /fermer/i }))
+      await expectBackOnContinent(app)
+    })
 
-    await waitForElementToBeRemoved(() => screen.queryByRole('complementary', { name: /fiche du pays/i }))
-    expect(country('SEN')).not.toHaveClass('is-selected')
-  })
+    test('par le bouton ✕ de la fiche', async () => {
+      const app = await zoomedOnSenegal()
 
-  test('au clavier : Entrée ouvre la fiche, Échap la ferme et rend le focus au pays', async () => {
-    const { user, country } = await renderApp()
+      await app.user.click(screen.getByRole('button', { name: /fermer/i }))
 
-    act(() => country('SEN').focus())
-    await user.keyboard('{Enter}')
+      await expectBackOnContinent(app)
+    })
 
-    expect(screen.getByRole('heading', { name: 'Sénégal' })).toHaveFocus()
+    test('par Échap, en rendant le focus au pays', async () => {
+      const app = await renderApp()
 
-    await user.keyboard('{Escape}')
+      act(() => app.country('SEN').focus())
+      await app.user.keyboard('{Enter}')
+      expect(screen.getByRole('heading', { name: 'Sénégal' })).toHaveFocus()
 
-    await waitForElementToBeRemoved(() => screen.queryByRole('complementary', { name: /fiche du pays/i }))
-    expect(country('SEN')).toHaveFocus()
+      await app.user.keyboard('{Escape}')
+
+      await expectBackOnContinent(app)
+      expect(app.country('SEN')).toHaveFocus()
+    })
   })
 })

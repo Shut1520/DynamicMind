@@ -1,10 +1,13 @@
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import AfricaMap from './map/AfricaMap.jsx'
+import { useMapNavigation } from './state/useMapNavigation.js'
+import Breadcrumb from './ui/Breadcrumb.jsx'
 import InfoPanel from './ui/InfoPanel.jsx'
 
 function App() {
-  const [selectedId, setSelectedId] = useState(null)
-  const closePanel = useCallback(() => setSelectedId(null), [])
+  const { path, open, back, goTo } = useMapNavigation()
+  const countryId = path.find((entry) => entry.level === 'country')?.id ?? null
+  const openCountry = useCallback((id) => open('country', id), [open])
 
   return (
     <div className="app">
@@ -14,9 +17,10 @@ function App() {
       </header>
       <main className="map-area" aria-label="Carte interactive">
         <div className="map-stage">
-          <AfricaMap selectedId={selectedId} onCountryActivate={setSelectedId} />
+          <Breadcrumb path={path} onNavigate={goTo} onBack={back} />
+          <AfricaMap focusId={countryId} selectedId={countryId} onCountryActivate={openCountry} />
         </div>
-        <InfoPanel countryId={selectedId} onClose={closePanel} />
+        <InfoPanel countryId={countryId} onClose={back} />
       </main>
     </div>
   )

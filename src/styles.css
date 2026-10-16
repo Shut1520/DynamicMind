@@ -169,7 +169,9 @@ body {
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   outline: none;
-  transition: fill var(--duration-hover) ease;
+  transition:
+    fill var(--duration-hover) ease,
+    opacity 400ms ease;
 }
 
 .map-region[data-interactive='true'] {
@@ -184,6 +186,15 @@ body {
 .map-region[data-interactive='false'] {
   fill: var(--land-disputed);
   stroke-dasharray: 2 2;
+}
+
+/* Une fois zoomé sur un pays, les autres restent visibles mais en retrait. */
+.map-region.is-dimmed {
+  opacity: 0.35;
+}
+
+.map-region.is-dimmed.is-active {
+  opacity: 0.75;
 }
 
 .map-outline {
@@ -201,6 +212,7 @@ body {
   fill: var(--land);
   stroke: var(--surface);
   stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
   cursor: pointer;
   transition: fill var(--duration-hover) ease;
 }
@@ -217,7 +229,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 4;
   max-width: 260px;
   padding: 10px 12px;
   border-radius: 10px;
@@ -275,7 +287,87 @@ body {
   }
 }
 
+/* --- Fil d'Ariane --- */
+
+.breadcrumb {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100% - 24px);
+  padding: 4px 12px 4px 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel-bg);
+  box-shadow: 0 4px 14px rgb(27 18 13 / 0.08);
+  font-size: 0.875rem;
+}
+
+.breadcrumb__back {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--duration-hover) ease;
+}
+
+.breadcrumb__back:hover {
+  background: var(--border);
+}
+
+.breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0 0 0 8px;
+  list-style: none;
+}
+
+.breadcrumb__item + .breadcrumb__item::before {
+  content: '›';
+  margin: 0 8px;
+  color: var(--text-muted);
+}
+
+.breadcrumb__item [aria-current='page'] {
+  font-weight: 600;
+}
+
+.breadcrumb__link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--duration-hover) ease;
+}
+
+.breadcrumb__link:hover {
+  color: var(--text);
+  text-decoration-color: currentColor;
+}
+
+.breadcrumb__back:focus-visible,
+.breadcrumb__link:focus-visible {
+  outline: 2px solid var(--outline);
+  outline-offset: 2px;
+}
+
 /* --- Panneau d'infos --- */
+/* Largeur (360px), marges (16px) et point de rupture mobile (640px) : synchronisés avec src/layout.js. */
 
 .info-panel {
   position: absolute;
@@ -415,7 +507,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .map-region,
   .map-marker,
-  .info-panel__close {
+  .info-panel__close,
+  .breadcrumb__back,
+  .breadcrumb__link {
     transition: none;
   }
 

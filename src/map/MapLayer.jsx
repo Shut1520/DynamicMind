@@ -4,9 +4,10 @@ const classNames = (...names) => names.filter(Boolean).join(' ')
 
 /**
  * Une couche de la carte : un tracé SVG par entité.
- * @param {{ shapes: {id: string, name: string, interactive: boolean, d: string}[], activeId: string | null, selectedId: string | null, describedBy: string }} props
+ * Quand `focusId` est défini, les autres entités sont estompées (mais restent cliquables).
+ * @param {{ shapes: {id: string, name: string, interactive: boolean, d: string}[], activeId: string | null, selectedId: string | null, focusId?: string | null, describedBy: string }} props
  */
-function MapLayer({ shapes, activeId, selectedId, describedBy }) {
+function MapLayer({ shapes, activeId, selectedId, focusId = null, describedBy }) {
   return (
     <g className="map-layer">
       {shapes.map(({ id, name, interactive, d }) => {
@@ -14,7 +15,12 @@ function MapLayer({ shapes, activeId, selectedId, describedBy }) {
         return (
           <path
             key={id}
-            className={classNames('map-region', isActive && 'is-active', id === selectedId && 'is-selected')}
+            className={classNames(
+              'map-region',
+              isActive && 'is-active',
+              id === selectedId && 'is-selected',
+              focusId && id !== focusId && 'is-dimmed',
+            )}
             d={d}
             data-id={id}
             data-interactive={String(interactive)}
