@@ -6,6 +6,7 @@
   --border: #e2dfd6;
   --land: #dcd8cc;
   --land-stroke: #ffffff;
+  --land-disputed: #ebe8df;
   --accent: #c8642a;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -24,6 +25,7 @@
     --border: #34312a;
     --land: #3a372f;
     --land-stroke: #15140f;
+    --land-disputed: #2a2822;
     --accent: #e08a52;
   }
 }
@@ -36,6 +38,7 @@
   --border: #34312a;
   --land: #3a372f;
   --land-stroke: #15140f;
+  --land-disputed: #2a2822;
   --accent: #e08a52;
 }
 
@@ -70,12 +73,68 @@ body {
 }
 
 .map-stage {
+  position: relative;
   flex: 1;
-  display: grid;
-  place-items: center;
   min-height: 60vh;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surface);
+  overflow: hidden;
+}
+
+.africa-map {
+  position: absolute;
+  inset: 0;
+}
+
+.africa-map__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.africa-map__status {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  height: 100%;
+  margin: 0;
   color: var(--text-muted);
+}
+
+.africa-map__status p {
+  margin: 0;
+}
+
+.africa-map__status button {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.map-region {
+  fill: var(--land);
+  stroke: var(--land-stroke);
+  stroke-width: 0.75;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.map-region[data-interactive='false'] {
+  fill: var(--land-disputed);
+  stroke-dasharray: 2 2;
+}
+
+/* Sur petit écran, le cadre épouse les proportions du continent (≈ 9:10). */
+@media (max-width: 640px) {
+  .map-stage {
+    flex: none;
+    min-height: 0;
+    aspect-ratio: 9 / 10;
+  }
 }

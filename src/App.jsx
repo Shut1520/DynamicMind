@@ -1,3 +1,5 @@
+import AfricaMap from './map/AfricaMap.jsx'
+
 function App() {
   return (
     <div className="app">
@@ -6,7 +8,7 @@ function App() {
         <p>Survole un pays pour découvrir ses informations.</p>
       </header>
       <main className="map-stage" aria-label="Carte interactive">
-        La carte arrive bientôt.
+        <AfricaMap />
       </main>
     </div>
   )
