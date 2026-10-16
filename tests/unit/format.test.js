@@ -1,4 +1,4 @@
-import { formatArea, formatList, formatPopulation } from '../../src/ui/format.js'
+import { formatArea, formatDensity, formatList, formatPopulation } from '../../src/ui/format.js'
 
 // Intl utilise des espaces insécables comme séparateurs : on les normalise pour comparer.
 const plain = (text) => text.replace(/[  ]/g, ' ')
@@ -27,5 +27,11 @@ describe('formatList', () => {
   test('joint les éléments à la française', () => {
     expect(formatList(['Pretoria', 'Bloemfontein', 'Le Cap'])).toBe('Pretoria, Bloemfontein et Le Cap')
     expect(formatList(['Dakar'])).toBe('Dakar')
+  })
+})
+
+describe('formatDensity', () => {
+  test('donne le nombre d’habitants par km², arrondi', () => {
+    expect(plain(formatDensity(18931966, 196722))).toBe('96 hab./km²')
   })
 })

@@ -24,6 +24,9 @@ function pointerPosition(event) {
 export function useMapHover({ onActivate, getAnchor }) {
   const [active, setActive] = useState(null)
   const pointerType = useRef('mouse')
+  // Pays actif au moment de l'appui : le focus donné par le navigateur au tap ne doit pas compter.
+  const activeAtPress = useRef(null)
+  const isPointerPressed = useRef(false)
 
   const show = (id, position) => setActive({ id, ...position })
   const clear = () => setActive(null)
@@ -35,6 +38,11 @@ export function useMapHover({ onActivate, getAnchor }) {
   const handlers = {
     onPointerDown(event) {
       pointerType.current = event.pointerType || 'mouse'
+      activeAtPress.current = active?.id ?? null
+      isPointerPressed.current = true
+    },
+    onPointerUp() {
+      isPointerPressed.current = false
     },
     onPointerOver(event) {
       if (event.pointerType === 'touch') return
@@ -48,6 +56,7 @@ export function useMapHover({ onActivate, getAnchor }) {
       setActive((current) => (current ? { ...current, x, y } : current))
     },
     onPointerLeave(event) {
+      isPointerPressed.current = false
       if (event.pointerType !== 'touch') clear()
     },
     onClick(event) {
@@ -57,10 +66,12 @@ export function useMapHover({ onActivate, getAnchor }) {
         return
       }
       if (!target) clear()
-      else if (active?.id === target.id) activate(target)
+      else if (activeAtPress.current === target.id) activate(target)
       else show(target.id, pointerPosition(event))
     },
     onFocus(event) {
+      // Le focus donné par un clic ou un tap est déjà géré par le survol.
+      if (isPointerPressed.current) return
       const id = event.target.dataset?.id
       const anchor = id && getAnchor(id)
       if (anchor) show(id, { x: anchor[0], y: anchor[1] })

@@ -36,7 +36,7 @@ function MapStatus({ status, onRetry }) {
 }
 
 /** Carte de l'Afrique : survol, infobulle, clavier et tactile. */
-function AfricaMap({ onCountryActivate }) {
+function AfricaMap({ selectedId = null, onCountryActivate }) {
   const [containerRef, size] = useElementSize()
   const geo = useProjection(size.width, size.height)
   const { status, countries, retry } = useAfricaCountries()
@@ -65,9 +65,9 @@ function AfricaMap({ onCountryActivate }) {
           {...handlers}
         >
           <title id="africa-map-title">Carte de l&apos;Afrique</title>
-          <MapLayer shapes={shapes} activeId={activeId} describedBy={TOOLTIP_ID} />
+          <MapLayer shapes={shapes} activeId={activeId} selectedId={selectedId} describedBy={TOOLTIP_ID} />
           {activeShape?.interactive && <path className="map-outline" d={activeShape.d} />}
-          <MarkerLayer markers={markers} activeId={activeId} />
+          <MarkerLayer markers={markers} activeId={activeId} selectedId={selectedId} />
         </svg>
       )}
 

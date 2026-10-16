@@ -23,3 +23,8 @@ export function formatArea(value) {
 export function formatList(items) {
   return listFormat.format(items)
 }
+
+/** Habitants par km², arrondi : 18931966 hab. sur 196722 km² → « 96 hab./km² ». */
+export function formatDensity(population, area) {
+  return `${integerFormat.format(Math.round(population / area))} hab./km²`
+}

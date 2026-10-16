@@ -28,8 +28,11 @@ async function renderMap(props = {}) {
   return { user, map, country }
 }
 
+// Comme un vrai navigateur : pointerdown, puis focus de l'élément touché, puis click.
 const tap = (element) => {
   fireEvent.pointerDown(element, { pointerType: 'touch' })
+  if (element.tabIndex >= 0) act(() => element.focus())
+  fireEvent.pointerUp(element, { pointerType: 'touch' })
   fireEvent.click(element)
 }
 

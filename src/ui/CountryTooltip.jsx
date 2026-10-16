@@ -1,7 +1,6 @@
 import countriesInfo from '../data/countries-info.json'
+import { assetUrl } from './assets.js'
 import { formatList, formatPopulation } from './format.js'
-
-const assetUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`
 
 /** Contenu de l'infobulle d'un pays (ou d'un territoire contesté). */
 function CountryTooltip({ id, name }) {
