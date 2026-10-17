@@ -1,8 +1,9 @@
 // Pile de navigation : [] = continent, puis un élément par niveau ouvert.
-export const LEVELS = Object.freeze(['country', 'region', 'subregion'])
+// « locality » : communes, secteurs, chefferies (là où la source descend jusque-là).
+export const LEVELS = Object.freeze(['country', 'region', 'subregion', 'locality'])
 
 /**
- * @typedef {{ level: 'country' | 'region' | 'subregion', id: string, data?: object }} NavigationEntry
+ * @typedef {{ level: 'country' | 'region' | 'subregion' | 'locality', id: string, data?: object }} NavigationEntry
  * `data` transporte ce qu'il faut pour afficher le niveau (ex. la fiche d'une région).
  * @param {NavigationEntry[]} state
  */

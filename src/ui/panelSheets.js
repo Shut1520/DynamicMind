@@ -40,6 +40,14 @@ export function countrySheet(countryId) {
 }
 
 /** Fiche d'une région ou d'une subdivision (les informations absentes de la source sont omises). */
+// Les niveaux issus d'OpenStreetMap (communes de RDC) ne passent pas par Wikidata.
+function regionSources({ provider = 'geoBoundaries', license }) {
+  const licence = license ? ` (licence : ${license})` : ''
+  return provider === 'OpenStreetMap'
+    ? `Source : contributeurs OpenStreetMap${licence}.`
+    : `Sources : ${provider}${licence}, Wikidata.`
+}
+
 export function regionSheet(region) {
   const country = countriesInfo[region.countryId]
   const countryName = country?.name ?? ''
@@ -59,6 +67,6 @@ export function regionSheet(region) {
       region.parentName && ['Rattachée à', region.parentName],
       ['Pays', countryName],
     ].filter(Boolean),
-    sources: `Sources : geoBoundaries${region.license ? ` (licence : ${region.license})` : ''}, Wikidata.`,
+    sources: regionSources(region),
   }
 }

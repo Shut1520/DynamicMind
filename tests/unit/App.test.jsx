@@ -78,6 +78,54 @@ describe('App', () => {
     })
   })
 
+  describe('communes (RDC)', () => {
+    async function openDrcRegion(name) {
+      const app = await renderApp()
+      await app.user.click(app.country('COD'))
+      await screen.findByRole('button', { name })
+      await app.user.click(app.map.querySelector(`path[data-level="region"][aria-label="${name}"]`))
+      const path = (level, label) => app.map.querySelector(`path[data-level="${level}"][aria-label="${label}"]`)
+      return { ...app, path }
+    }
+
+    test('Kinshasa s’ouvre directement sur ses 24 communes', async () => {
+      const { user, map, path } = await openDrcRegion('Kinshasa')
+      await screen.findByRole('button', { name: 'Gombe' })
+
+      expect(map.querySelectorAll('path[data-level="subregion"]')).toHaveLength(24)
+      await user.hover(path('subregion', 'Gombe'))
+      expect(screen.getByRole('tooltip')).toHaveTextContent(/Commune · Kinshasa, /)
+    })
+
+    test('territoire → chefferie : quatrième niveau, fiche et retour', async () => {
+      const { user, map, path, viewport, breadcrumb } = await openDrcRegion('Sud-Kivu')
+      await screen.findByRole('button', { name: 'Mwenga' })
+      await user.click(path('subregion', 'Mwenga'))
+      await screen.findByRole('button', { name: 'Luindi' })
+      const territoryScale = scaleOf(viewport())
+
+      expect(map.querySelectorAll('path[data-level="locality"]')).toHaveLength(6)
+      expect(map.querySelectorAll('path[data-level="locality"][tabindex="0"]')).toHaveLength(6)
+      expect(map.querySelectorAll('path[data-level="subregion"][tabindex="0"]')).toHaveLength(0)
+
+      await user.click(path('locality', 'Luindi'))
+
+      const panel = screen.getByRole('complementary', { name: /fiche de la région : luindi/i })
+      expect(panel).toHaveTextContent('Chefferie · ')
+      expect(panel).toHaveTextContent(/Rattachée à\s*Mwenga/)
+      expect(panel).toHaveTextContent(/OpenStreetMap/)
+      expect(scaleOf(viewport())).toBeGreaterThan(territoryScale)
+      expect(within(breadcrumb()).getByText('Luindi')).toHaveAttribute('aria-current', 'page')
+      expect(within(breadcrumb()).getByRole('button', { name: 'Sud-Kivu' })).toBeInTheDocument()
+
+      await user.keyboard('{Escape}')
+      expect(screen.getByRole('heading', { name: 'Mwenga' })).toBeInTheDocument()
+
+      await user.click(within(breadcrumb()).getByRole('button', { name: 'Sud-Kivu' }))
+      expect(map.querySelectorAll('path[data-level="locality"]')).toHaveLength(0)
+    })
+  })
+
   describe('régions', () => {
     async function zoomedOnCameroon() {
       const app = await renderApp()

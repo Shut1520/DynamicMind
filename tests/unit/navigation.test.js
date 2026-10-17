@@ -26,6 +26,17 @@ describe('navigationReducer', () => {
     ])
   })
 
+  test('descend jusqu’au niveau local (commune)', () => {
+    const state = [
+      { level: 'country', id: 'COD' },
+      { level: 'region', id: 'KIV' },
+      { level: 'subregion', id: 'MWE' },
+    ]
+
+    expect(navigationReducer(state, open('locality', 'LUI')).at(-1)).toEqual({ level: 'locality', id: 'LUI' })
+    expect(navigationReducer(state, open('locality', 'LUI'))).toHaveLength(4)
+  })
+
   test('changer de pays depuis une région oublie la région', () => {
     const state = [{ level: 'country', id: 'CMR' }, { level: 'region', id: 'CM-LT' }]
 

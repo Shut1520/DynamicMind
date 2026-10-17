@@ -1,16 +1,18 @@
 import countriesInfo from '../data/countries-info.json'
 
 /**
- * Données d'une région ou d'une subdivision telles que transmises à la navigation,
- * à l'infobulle et au panneau d'infos.
+ * Données d'une région, d'une subdivision ou d'une commune telles que transmises à la navigation,
+ * à l'infobulle et au panneau d'infos. Le type propre à l'entité (commune, chefferie…) prime
+ * sur celui du fichier.
  */
 export function regionDetails(shape, meta) {
   return {
     ...shape.properties,
     countryId: meta?.countryId ?? null,
-    type: meta?.type ?? 'Région',
+    type: shape.properties.type ?? meta?.type ?? 'Région',
     parentName: meta?.parentName ?? null,
     license: meta?.license ?? null,
+    provider: meta?.provider ?? 'geoBoundaries',
   }
 }
 

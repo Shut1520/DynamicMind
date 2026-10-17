@@ -20,11 +20,15 @@ export function createProjection({ width, height, padding = DEFAULT_PADDING }) {
     return null
   }
 
-  return geoMercator().fitExtent(
-    [
-      [padding, padding],
-      [width - padding, height - padding],
-    ],
-    AFRICA_FRAME,
-  )
+  // precision(0) : pas de rééchantillonnage adaptatif. Les contours sont déjà denses,
+  // il ne fait qu'allonger le calcul des tracés (≈ 20 %) sans changer le résultat.
+  return geoMercator()
+    .precision(0)
+    .fitExtent(
+      [
+        [padding, padding],
+        [width - padding, height - padding],
+      ],
+      AFRICA_FRAME,
+    )
 }

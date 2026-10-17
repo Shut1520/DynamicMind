@@ -5,6 +5,7 @@ import {
   loadAfricaCountries,
   loadCountryRegions,
   loadRegionSubdivisions,
+  loadSubregionLocalities,
 } from '../../src/data/loaders.js'
 
 const topologyText = readFileSync(resolve(__dirname, '../../public/geo/africa.topo.json'), 'utf8')
@@ -100,6 +101,32 @@ describe('loadRegionSubdivisions', () => {
 
   test('refuse un identifiant de région invalide sans rien télécharger', async () => {
     await expect(loadRegionSubdivisions('CMR', '../../etc')).rejects.toThrow(/identifiant de région invalide/i)
+    expect(fetch).not.toHaveBeenCalled()
+  })
+})
+
+describe('loadSubregionLocalities', () => {
+  const MWENGA = '63176286B33283671139480'
+  const text = readFileSync(resolve(__dirname, `../../public/geo/adm3/COD/${MWENGA}.topo.json`), 'utf8')
+
+  beforeEach(() => {
+    clearGeoCache()
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => JSON.parse(text) })))
+  })
+
+  afterEach(() => vi.unstubAllGlobals())
+
+  test('charge les chefferies d’un territoire avec leur source', async () => {
+    const { regions, meta } = await loadSubregionLocalities('COD', MWENGA)
+
+    expect(fetch).toHaveBeenCalledWith(`/geo/adm3/COD/${MWENGA}.topo.json`)
+    expect(regions.map((r) => r.properties.name)).toContain('Luindi')
+    expect(meta).toMatchObject({ parentName: 'Mwenga', provider: 'OpenStreetMap' })
+  })
+
+  test('valide le code pays et l’identifiant avant de télécharger', async () => {
+    await expect(loadSubregionLocalities('cod', MWENGA)).rejects.toThrow(/code pays invalide/i)
+    await expect(loadSubregionLocalities('COD', 'a/b')).rejects.toThrow(/identifiant de région invalide/i)
     expect(fetch).not.toHaveBeenCalled()
   })
 })

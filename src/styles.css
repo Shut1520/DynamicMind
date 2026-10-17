@@ -97,6 +97,14 @@ body {
   gap: 16px;
 }
 
+.app__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .app__header h1 {
   margin: 0;
   font-size: 1.5rem;
@@ -105,6 +113,44 @@ body {
 .app__header p {
   margin: 4px 0 0;
   color: var(--text-muted);
+}
+
+/* --- Choix du thème --- */
+
+.theme-switch {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.theme-switch__option {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    background var(--duration-hover) ease,
+    color var(--duration-hover) ease;
+}
+
+.theme-switch__option:hover {
+  color: var(--text);
+}
+
+.theme-switch__option[aria-pressed='true'] {
+  background: var(--land-hover);
+  color: var(--surface);
+}
+
+.theme-switch__option:focus-visible {
+  outline: 2px solid var(--outline);
+  outline-offset: 2px;
 }
 
 .map-area {
@@ -171,7 +217,8 @@ body {
   outline: none;
   transition:
     fill var(--duration-hover) ease,
-    opacity 400ms ease;
+    fill-opacity 400ms ease,
+    stroke-opacity 400ms ease;
 }
 
 .map-region[data-interactive='true'] {
@@ -188,13 +235,17 @@ body {
   stroke-dasharray: 2 2;
 }
 
-/* Une fois zoomé sur un pays, les autres restent visibles mais en retrait. */
+/* Une fois zoomé sur un pays, les autres restent visibles mais en retrait.
+   fill-opacity / stroke-opacity plutôt qu'opacity : « opacity » oblige le navigateur à dessiner
+   chaque tracé à part avant de le fondre, ce qui divisait par deux la fluidité du zoom. */
 .map-region.is-dimmed {
-  opacity: 0.35;
+  fill-opacity: 0.35;
+  stroke-opacity: 0.35;
 }
 
 .map-region.is-dimmed.is-active {
-  opacity: 0.75;
+  fill-opacity: 0.75;
+  stroke-opacity: 0.75;
 }
 
 /* Sous une couche plus fine, l'entité ouverte garde sa couleur de base : pas de liseré foncé. */
@@ -206,14 +257,16 @@ body {
    comme ses voisines : les petits écarts entre les frontières des deux sources ne se voient plus. */
 .map-layer.is-cover-focused .map-region.is-selected {
   fill: var(--land);
-  opacity: 0.35;
+  fill-opacity: 0.35;
+  stroke-opacity: 0.35;
 }
 
 .map-layer--region .map-region {
   stroke-width: 0.6;
 }
 
-.map-layer--subregion .map-region {
+.map-layer--subregion .map-region,
+.map-layer--locality .map-region {
   stroke-width: 0.5;
 }
 
@@ -559,7 +612,8 @@ body {
   .map-marker,
   .info-panel__close,
   .breadcrumb__back,
-  .breadcrumb__link {
+  .breadcrumb__link,
+  .theme-switch__option {
     transition: none;
   }
 

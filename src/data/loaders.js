@@ -52,14 +52,23 @@ export async function loadCountryRegions(countryId) {
   return { regions: features, meta }
 }
 
-/** Subdivisions (ADM2) d'une région, avec les métadonnées de la source (type, région parente…). */
-export async function loadRegionSubdivisions(countryId, regionId) {
+async function loadChildren(level, countryId, parentId) {
   if (!COUNTRY_CODE.test(String(countryId))) {
     throw new Error(`Code pays invalide : ${countryId}`)
   }
-  if (!REGION_ID.test(String(regionId))) {
-    throw new Error(`Identifiant de région invalide : ${regionId}`)
+  if (!REGION_ID.test(String(parentId))) {
+    throw new Error(`Identifiant de région invalide : ${parentId}`)
   }
-  const { features, meta } = await loadOnce(`${GEO_BASE}adm2/${countryId}/${regionId}.topo.json`, 'regions')
+  const { features, meta } = await loadOnce(`${GEO_BASE}${level}/${countryId}/${parentId}.topo.json`, 'regions')
   return { regions: features, meta }
+}
+
+/** Subdivisions (ADM2) d'une région, avec les métadonnées de la source (type, région parente…). */
+export function loadRegionSubdivisions(countryId, regionId) {
+  return loadChildren('adm2', countryId, regionId)
+}
+
+/** Communes, secteurs ou chefferies d'une subdivision (niveau local, là où il existe). */
+export function loadSubregionLocalities(countryId, subregionId) {
+  return loadChildren('adm3', countryId, subregionId)
 }

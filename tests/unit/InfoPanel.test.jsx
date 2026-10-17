@@ -156,3 +156,38 @@ describe('InfoPanel — fiche d’une subdivision', () => {
     expect(panel).toHaveTextContent(/1\s321\skm²/)
   })
 })
+
+describe('InfoPanel — fiche d’une commune', () => {
+  const gombe = {
+    id: 'osm-r1',
+    iso: null,
+    name: 'Gombe',
+    area: 12,
+    capitals: [],
+    population: null,
+    populationYear: null,
+    countryId: 'COD',
+    type: 'Commune',
+    parentName: 'Kinshasa',
+    license: 'Open Data Commons Open Database License 1.0',
+    provider: 'OpenStreetMap',
+  }
+
+  test('la commune prime sur ses niveaux parents et cite OpenStreetMap', () => {
+    render(
+      <InfoPanel
+        countryId="COD"
+        region={{ id: 'R', name: 'Kinshasa' }}
+        subregion={{ id: 'S', name: 'Mont Ngafula' }}
+        locality={gombe}
+        onClose={() => {}}
+      />,
+    )
+    const panel = screen.getByRole('complementary', { name: /fiche de la région : gombe/i })
+
+    expect(panel).toHaveTextContent('Commune · ')
+    expect(panel).toHaveTextContent(/Rattachée à\s*Kinshasa/)
+    expect(panel).toHaveTextContent('Source : contributeurs OpenStreetMap (licence : Open Data Commons Open Database License 1.0).')
+    expect(panel).not.toHaveTextContent('Wikidata')
+  })
+})

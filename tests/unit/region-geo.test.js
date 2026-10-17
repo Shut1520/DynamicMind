@@ -233,6 +233,42 @@ describe('buildRegionTopology (options des subdivisions)', () => {
 
     expect(topology.meta).toMatchObject({ type: 'Subdivision', parentId: 'R1' })
   })
+
+  test('simplifie les contours trop détaillés pour l’échelle d’affichage, sans les déformer', () => {
+    // Carré de 1° dont chaque côté porte 50 sommets presque alignés (bruit d’un demi-mètre).
+    const side = (from, to) =>
+      Array.from({ length: 50 }, (_, i) => {
+        const t = i / 50
+        const wobble = (i % 2) * 0.000005
+        return [from[0] + (to[0] - from[0]) * t + wobble, from[1] + (to[1] - from[1]) * t + wobble]
+      })
+    const corners = [[10, 5], [10, 6], [11, 6], [11, 5]]
+    const ring = [...corners.flatMap((corner, i) => side(corner, corners[(i + 1) % 4])), [10, 5]]
+    const detailed = normalizeRegions(
+      { type: 'FeatureCollection', features: [region({ shapeName: 'Dense', shapeID: 'D1' }, { type: 'Polygon', coordinates: [ring] })] },
+      'TST',
+    )
+    const points = (topology) => topology.arcs.reduce((sum, arc) => sum + arc.length, 0)
+
+    const full = buildRegionTopology(detailed, new Map(), meta)
+    const light = buildRegionTopology(detailed, new Map(), meta, { simplify: true })
+
+    expect(points(light)).toBeLessThan(points(full) / 4)
+    const [area] = feature(light, light.objects.regions).features.map((f) => geoArea(f))
+    const [fullArea] = feature(full, full.objects.regions).features.map((f) => geoArea(f))
+    expect(area).toBeCloseTo(fullArea, 6)
+  })
+
+  test('garde le type propre à chaque entité quand il est fourni', () => {
+    const [first, second] = normalizeRegions(GEOJSON, 'COD')
+    const typed = [{ ...first, properties: { ...first.properties, type: 'Chefferie' } }, second]
+
+    const topology = buildRegionTopology(typed, new Map(), meta)
+    const byId = new Map(feature(topology, topology.objects.regions).features.map((f) => [f.properties.id, f.properties]))
+
+    expect(byId.get(first.properties.id).type).toBe('Chefferie')
+    expect(byId.get(second.properties.id)).not.toHaveProperty('type')
+  })
 })
 
 describe('îlots et contrôle final', () => {

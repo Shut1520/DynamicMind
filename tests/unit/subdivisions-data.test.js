@@ -47,7 +47,9 @@ describe('public/geo/adm2/', () => {
         subdivisions.forEach((s) => {
           expect(geoArea(s), s.properties.name).toBeLessThan(2 * Math.PI)
           expect(s.properties.name).toMatch(/\S/)
-          expect(s.properties.subdivisions).toBe(0)
+          // Une subdivision n'est découpée que si son niveau local existe (communes de RDC).
+          const localFile = resolve(GEO_DIR, `adm3/${code}/${s.properties.id}.topo.json`)
+          expect(existsSync(localFile), s.properties.name).toBe(s.properties.subdivisions > 0)
         })
       })
     },

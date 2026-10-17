@@ -5,18 +5,18 @@ import { countrySheet, regionSheet } from './panelSheets.js'
 const CLOSE_FALLBACK_MS = 300
 
 /**
- * Fiche détaillée de l'entité ouverte la plus fine (subdivision, région ou pays),
+ * Fiche détaillée de l'entité ouverte la plus fine (commune, subdivision, région ou pays),
  * avec animations d'ouverture et de fermeture.
- * @param {{ countryId: string | null, region?: object | null, subregion?: object | null, onClose: () => void }} props
+ * @param {{ countryId: string | null, region?: object | null, subregion?: object | null, locality?: object | null, onClose: () => void }} props
  */
-function sheetFor(countryId, region, subregion) {
-  if (subregion) return regionSheet(subregion)
-  if (region) return regionSheet(region)
+function sheetFor(countryId, ...levels) {
+  const finest = levels.findLast(Boolean)
+  if (finest) return regionSheet(finest)
   return countryId ? countrySheet(countryId) : null
 }
 
-function InfoPanel({ countryId, region = null, subregion = null, onClose }) {
-  const sheet = sheetFor(countryId, region, subregion)
+function InfoPanel({ countryId, region = null, subregion = null, locality = null, onClose }) {
+  const sheet = sheetFor(countryId, region, subregion, locality)
   const [shown, setShown] = useState(sheet)
   const headingRef = useRef(null)
   const returnFocusRef = useRef(null)

@@ -1,7 +1,8 @@
 // Préparation des régions (ADM1) issues de geoBoundaries, enrichies avec Wikidata.
 import { geoArea } from 'd3-geo'
-import { feature as toGeoJSON } from 'topojson-client'
+import { quantize, feature as toGeoJSON } from 'topojson-client'
 import { topology } from 'topojson-server'
+import { presimplify, simplify, sphericalTriangleArea } from 'topojson-simplify'
 
 const QUANTIZATION = 1e5
 const EARTH_RADIUS_KM = 6371.0088
@@ -30,6 +31,18 @@ const REGION_TYPE_RULES = Object.freeze([
   [/island/i, 'Île'],
 ])
 const DEFAULT_REGION_TYPE = 'Région'
+
+// Simplification adaptée au zoom : un fichier est affiché quand son parent remplit à peu près
+// l'écran (≈ 600 px de large). On retire les sommets dont le triangle fait moins d'un dixième
+// de pixel carré à cette échelle : invisible à l'œil, mais 2 à 3 fois moins de points à tracer.
+const VIEW_WIDTH_PX = 600
+const MIN_TRIANGLE_PX2 = 0.1
+
+/** Poids minimal (stéradians) pour simplifier un fichier qui couvre `viewAreaKm2` à l'écran. */
+export function minWeightForView(viewAreaKm2) {
+  const pixelKm = Math.sqrt(viewAreaKm2) / VIEW_WIDTH_PX
+  return (MIN_TRIANGLE_PX2 * pixelKm ** 2) / EARTH_RADIUS_KM ** 2
+}
 
 /** Libellé geoBoundaries → type en français ; `fallback` si le libellé n'est pas reconnu. */
 export function translateRegionType(type, fallback = DEFAULT_REGION_TYPE) {
@@ -143,14 +156,15 @@ export function parseWikidataRegions(response) {
  * TopoJSON (objet `regions`) d'un pays ou d'une région, avec noms français quand Wikidata les connaît.
  * Les métadonnées (type, licence, source…) sont gardées dans `topology.meta`.
  *
- * @param {{ quantization?: number, typeFallback?: string, subdivisionCounts?: Map<string, number> }} [options]
- *   `subdivisionCounts` : nombre de subdivisions de chaque entité (0 = dernier niveau disponible).
+ * @param {{ quantization?: number, typeFallback?: string, subdivisionCounts?: Map<string, number>, simplify?: boolean }} [options]
+ *   `subdivisionCounts` : nombre de subdivisions de chaque entité (0 = dernier niveau disponible) ;
+ *   `simplify` : allège les contours pour l'échelle à laquelle le fichier est affiché.
  */
 export function buildRegionTopology(
   regions,
   wikidataByIso,
   meta,
-  { quantization = QUANTIZATION, typeFallback, subdivisionCounts = new Map() } = {},
+  { quantization = QUANTIZATION, typeFallback, subdivisionCounts = new Map(), simplify: shouldSimplify = false } = {},
 ) {
   const extraOf = (properties) => (properties.iso && wikidataByIso.get(properties.iso)) || {}
 
@@ -179,12 +193,18 @@ export function buildRegionTopology(
         population: extra.population ?? null,
         populationYear: extra.populationYear ?? null,
         subdivisions: subdivisionCounts.get(properties.id) ?? 0,
+        // Type propre à l'entité quand il varie dans un même fichier (commune, chefferie…).
+        ...(properties.type ? { type: properties.type } : {}),
       },
       geometry,
     }
   })
 
-  const built = topology({ regions: { type: 'FeatureCollection', features } }, quantization)
+  // Simplifier avant de quantifier : presimplify travaille sur des coordonnées absolues.
+  const raw = topology({ regions: { type: 'FeatureCollection', features } })
+  const viewArea = features.reduce((sum, { properties }) => sum + properties.area, 0)
+  const lighter = shouldSimplify ? simplify(presimplify(raw, sphericalTriangleArea), minWeightForView(viewArea)) : raw
+  const built = quantize(lighter, quantization)
   assertNoInvertedGeometry(built)
 
   return { ...built, meta: { ...meta, type: translateRegionType(meta.type, typeFallback) } }

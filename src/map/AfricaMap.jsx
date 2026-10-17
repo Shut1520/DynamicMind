@@ -8,10 +8,11 @@ import { contextLabel, regionDetails } from './mapEntries.js'
 import { MapStatus, RegionStatus } from './MapStatus.jsx'
 import MarkerLayer from './MarkerLayer.jsx'
 import { useAfricaCountries } from './useAfricaCountries.js'
-import { useCountryRegions, useRegionSubdivisions } from './useCountryRegions.js'
+import { useCountryRegions, useRegionSubdivisions, useSubregionLocalities } from './useCountryRegions.js'
 import { useElementSize } from './useElementSize.js'
 import { useMapHover } from './useMapHover.js'
 import { useMapShapes } from './useMapShapes.js'
+import { prefetchTarget, usePrefetch } from './usePrefetch.js'
 import { useProjection } from './useProjection.js'
 import { useZoomTransition } from './useZoomTransition.js'
 import { IDENTITY, fitTransform, freeArea } from './zoom.js'
@@ -19,7 +20,7 @@ import { IDENTITY, fitTransform, freeArea } from './zoom.js'
 const TOOLTIP_ID = 'africa-map-tooltip'
 const FOCUS_PADDING = 32
 
-/** Cadrage animé sur l'entité ouverte la plus fine (subdivision, région, pays), sinon sur le continent. */
+/** Cadrage animé sur l'entité ouverte la plus fine (commune, subdivision, région, pays), sinon sur le continent. */
 function useFocusView(focusShape, size) {
   const target = useMemo(
     () => (focusShape ? fitTransform(focusShape.bounds, freeArea(size, true), { padding: FOCUS_PADDING }) : IDENTITY),
@@ -50,24 +51,26 @@ function ActiveTooltip({ active, entry, size }) {
   )
 }
 
-function LayerStatus({ regions, subdivisions }) {
-  if (subdivisions.status === 'loading' || subdivisions.status === 'error') {
-    return <RegionStatus status={subdivisions.status} label="subdivisions" onRetry={subdivisions.retry} />
-  }
-  return <RegionStatus status={regions.status} label="régions" onRetry={regions.retry} />
+// Pastille de la couche la plus fine en cours de chargement ou en erreur.
+function LayerStatus({ layers }) {
+  const pending = [...layers].reverse().find(({ state }) => state.status === 'loading' || state.status === 'error')
+  const { state, label } = pending ?? layers[0]
+  return <RegionStatus status={state.status} label={label} onRetry={state.retry} />
 }
 
 /**
  * Carte de l'Afrique : survol, infobulle, clavier, tactile, et zoom animé
- * de niveau en niveau (pays → régions → subdivisions).
+ * de niveau en niveau (pays → régions → subdivisions → communes).
  */
 function AfricaMap({
   countryId = null,
   regionId = null,
   subregionId = null,
+  localityId = null,
   onCountryActivate,
   onRegionActivate,
   onSubregionActivate,
+  onLocalityActivate,
 }) {
   const [containerRef, size] = useElementSize()
   const geo = useProjection(size.width, size.height)
@@ -78,26 +81,35 @@ function AfricaMap({
   const regionShapes = useMapShapes(regionsState.regions, geo)
   const subdivisionsState = useRegionSubdivisions(countryId, regionShapes.byId.get(regionId)?.properties)
   const subregionShapes = useMapShapes(subdivisionsState.regions, geo)
+  const localitiesState = useSubregionLocalities(countryId, subregionShapes.byId.get(subregionId)?.properties)
+  const localityShapes = useMapShapes(localitiesState.regions, geo)
   const markers = useMemo(() => (geo ? findSmallFeatures(countries, geo.path) : []), [countries, geo])
 
   // Couches visibles, de la plus large à la plus fine : les pays toujours, puis les régions
-  // du pays ouvert et les subdivisions de la région ouverte une fois chargées.
+  // du pays ouvert, les subdivisions de la région ouverte et les communes de la subdivision ouverte.
   const layers = [
     { level: 'country', shapes: countryShapes, openId: countryId, meta: null },
     { level: 'region', shapes: regionShapes, openId: regionId, meta: regionsState.meta },
     { level: 'subregion', shapes: subregionShapes, openId: subregionId, meta: subdivisionsState.meta },
+    { level: 'locality', shapes: localityShapes, openId: localityId, meta: localitiesState.meta },
   ].filter((entry) => entry.level === 'country' || entry.shapes.shapes.length > 0)
 
   const focusShape =
-    subregionShapes.byId.get(subregionId) ?? regionShapes.byId.get(regionId) ?? countryShapes.byId.get(countryId)
+    localityShapes.byId.get(localityId) ??
+    subregionShapes.byId.get(subregionId) ??
+    regionShapes.byId.get(regionId) ??
+    countryShapes.byId.get(countryId)
   const view = useFocusView(focusShape, size)
 
   const { active, handlers } = useMapHover({
     onActivate: (id, level) => {
+      if (level === 'country') {
+        onCountryActivate?.(id)
+        return
+      }
       const entry = findEntry(layers, id)
-      if (level === 'country') onCountryActivate?.(id)
-      else if (entry && level === 'region') onRegionActivate?.(regionDetails(entry.shape, entry.meta))
-      else if (entry && level === 'subregion') onSubregionActivate?.(regionDetails(entry.shape, entry.meta))
+      const activate = { region: onRegionActivate, subregion: onSubregionActivate, locality: onLocalityActivate }[level]
+      if (entry) activate?.(regionDetails(entry.shape, entry.meta))
     },
     getAnchor: (id) => {
       const centroid = findEntry(layers, id)?.shape.centroid
@@ -106,6 +118,7 @@ function AfricaMap({
   })
   const activeEntry = active ? findEntry(layers, active.id) : undefined
   const activeId = activeEntry?.shape.id ?? null
+  usePrefetch(prefetchTarget(activeEntry, countryId), geo)
 
   return (
     <div ref={containerRef} className="africa-map">
@@ -144,7 +157,15 @@ function AfricaMap({
         </svg>
       )}
 
-      {status === 'ready' && <LayerStatus regions={regionsState} subdivisions={subdivisionsState} />}
+      {status === 'ready' && (
+        <LayerStatus
+          layers={[
+            { state: regionsState, label: 'régions' },
+            { state: subdivisionsState, label: 'subdivisions' },
+            { state: localitiesState, label: 'communes' },
+          ]}
+        />
+      )}
 
       {activeEntry && <ActiveTooltip active={active} entry={activeEntry} size={size} />}
     </div>
