@@ -8,9 +8,11 @@ function App() {
   const { path, open, back, goTo } = useMapNavigation()
   const countryId = path.find((entry) => entry.level === 'country')?.id ?? null
   const regionEntry = path.find((entry) => entry.level === 'region') ?? null
+  const subregionEntry = path.find((entry) => entry.level === 'subregion') ?? null
 
   const openCountry = useCallback((id) => open('country', id), [open])
   const openRegion = useCallback((region) => open('region', region.id, region), [open])
+  const openSubregion = useCallback((subregion) => open('subregion', subregion.id, subregion), [open])
 
   return (
     <div className="app">
@@ -24,11 +26,18 @@ function App() {
           <AfricaMap
             countryId={countryId}
             regionId={regionEntry?.id ?? null}
+            subregionId={subregionEntry?.id ?? null}
             onCountryActivate={openCountry}
             onRegionActivate={openRegion}
+            onSubregionActivate={openSubregion}
           />
         </div>
-        <InfoPanel countryId={countryId} region={regionEntry?.data ?? null} onClose={back} />
+        <InfoPanel
+          countryId={countryId}
+          region={regionEntry?.data ?? null}
+          subregion={subregionEntry?.data ?? null}
+          onClose={back}
+        />
       </main>
     </div>
   )

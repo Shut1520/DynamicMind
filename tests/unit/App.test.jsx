@@ -21,6 +21,63 @@ describe('App', () => {
   beforeEach(setupMapEnvironment)
   afterEach(teardownMapEnvironment)
 
+  describe('subdivisions', () => {
+    async function openOuest() {
+      const app = await renderApp()
+      await app.user.click(app.country('CMR'))
+      await screen.findByRole('button', { name: 'Ouest' })
+      const regionPath = (name) => app.map.querySelector(`path[data-level="region"][aria-label="${name}"]`)
+      await app.user.click(regionPath('Ouest'))
+      await screen.findByRole('button', { name: 'Menoua' })
+      const subdivision = (name) => app.map.querySelector(`path[data-level="subregion"][aria-label="${name}"]`)
+      return { ...app, regionPath, subdivision }
+    }
+
+    test('ouvrir une région découpée affiche ses subdivisions, qui prennent le relais au clavier', async () => {
+      const { map } = await openOuest()
+
+      expect(map.querySelectorAll('path[data-level="subregion"]')).toHaveLength(8)
+      expect(map.querySelectorAll('path[data-level="subregion"][tabindex="0"]')).toHaveLength(8)
+      expect(map.querySelectorAll('path[data-level="region"][tabindex="0"]')).toHaveLength(0)
+    })
+
+    test('le survol d’une subdivision affiche son infobulle', async () => {
+      const { user, subdivision } = await openOuest()
+
+      await user.hover(subdivision('Noun'))
+
+      const tooltip = screen.getByRole('tooltip')
+      expect(tooltip).toHaveTextContent('Noun')
+      expect(tooltip).toHaveTextContent('Département · Ouest, Cameroun')
+    })
+
+    test('le clic sur une subdivision zoome dessus et ouvre sa fiche, Échap remonte à la région', async () => {
+      const { user, subdivision, viewport, breadcrumb } = await openOuest()
+      const regionScale = scaleOf(viewport())
+
+      await user.click(subdivision('Menoua'))
+
+      expect(scaleOf(viewport())).toBeGreaterThan(regionScale)
+      expect(screen.getByRole('heading', { name: 'Menoua' })).toBeInTheDocument()
+      expect(within(breadcrumb()).getByText('Menoua')).toHaveAttribute('aria-current', 'page')
+      expect(within(breadcrumb()).getByRole('button', { name: 'Ouest' })).toBeInTheDocument()
+      expect(subdivision('Noun')).toHaveClass('is-dimmed')
+
+      await user.keyboard('{Escape}')
+
+      expect(screen.getByRole('heading', { name: 'Ouest' })).toBeInTheDocument()
+      expect(subdivision('Noun')).not.toHaveClass('is-dimmed')
+    })
+
+    test('revenir au pays efface les subdivisions', async () => {
+      const { user, breadcrumb, map } = await openOuest()
+
+      await user.click(within(breadcrumb()).getByRole('button', { name: 'Cameroun' }))
+
+      expect(map.querySelectorAll('path[data-level="subregion"]')).toHaveLength(0)
+    })
+  })
+
   describe('régions', () => {
     async function zoomedOnCameroon() {
       const app = await renderApp()

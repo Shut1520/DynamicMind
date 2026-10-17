@@ -130,3 +130,29 @@ describe('InfoPanel — fiche d’une région', () => {
     expect(screen.getByRole('heading', { name: 'Cameroun' })).toHaveFocus()
   })
 })
+
+describe('InfoPanel — fiche d’une subdivision', () => {
+  const menoua = {
+    id: 'S1',
+    iso: null,
+    name: 'Menoua',
+    area: 1321,
+    capitals: [],
+    population: null,
+    populationYear: null,
+    countryId: 'CMR',
+    type: 'Département',
+    parentName: 'Ouest',
+    license: 'CC BY 4.0',
+  }
+
+  test('affiche la subdivision, sa région et son pays', () => {
+    render(<InfoPanel countryId="CMR" region={{ id: 'R', name: 'Ouest' }} subregion={menoua} onClose={() => {}} />)
+    const panel = screen.getByRole('complementary', { name: /fiche de la région : menoua/i })
+
+    expect(screen.getByRole('heading', { name: 'Menoua' })).toBeInTheDocument()
+    expect(panel).toHaveTextContent('Département · Cameroun')
+    expect(panel).toHaveTextContent(/Rattachée à\s*Ouest/)
+    expect(panel).toHaveTextContent(/1\s321\skm²/)
+  })
+})

@@ -197,18 +197,24 @@ body {
   opacity: 0.75;
 }
 
-/* Sous ses régions, le pays ouvert garde sa couleur de base : pas de liseré foncé aux frontières. */
-.has-regions .map-layer--country .map-region.is-selected {
+/* Sous une couche plus fine, l'entité ouverte garde sa couleur de base : pas de liseré foncé. */
+.map-layer.is-covered .map-region.is-selected {
   fill: var(--land);
 }
 
-/* Une région ouverte : le pays dessous s'efface pour que les régions estompées le soient vraiment. */
-.has-region-focus .map-layer--country .map-region.is-selected {
-  fill: transparent;
+/* Quand un élément de la couche plus fine est ouvert, l'entité dessous passe en retrait
+   comme ses voisines : les petits écarts entre les frontières des deux sources ne se voient plus. */
+.map-layer.is-cover-focused .map-region.is-selected {
+  fill: var(--land);
+  opacity: 0.35;
 }
 
 .map-layer--region .map-region {
   stroke-width: 0.6;
+}
+
+.map-layer--subregion .map-region {
+  stroke-width: 0.5;
 }
 
 /* --- Pastille d'état (chargement des régions) --- */

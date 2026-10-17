@@ -1,14 +1,14 @@
 import { useMemo } from 'react'
-import countriesInfo from '../data/countries-info.json'
 import CountryTooltip from '../ui/CountryTooltip.jsx'
 import RegionTooltip from '../ui/RegionTooltip.jsx'
 import Tooltip from '../ui/Tooltip.jsx'
 import { findSmallFeatures } from './islands.js'
 import MapLayer from './MapLayer.jsx'
+import { contextLabel, regionDetails } from './mapEntries.js'
 import { MapStatus, RegionStatus } from './MapStatus.jsx'
 import MarkerLayer from './MarkerLayer.jsx'
 import { useAfricaCountries } from './useAfricaCountries.js'
-import { useCountryRegions } from './useCountryRegions.js'
+import { useCountryRegions, useRegionSubdivisions } from './useCountryRegions.js'
 import { useElementSize } from './useElementSize.js'
 import { useMapHover } from './useMapHover.js'
 import { useMapShapes } from './useMapShapes.js'
@@ -19,15 +19,7 @@ import { IDENTITY, fitTransform, freeArea } from './zoom.js'
 const TOOLTIP_ID = 'africa-map-tooltip'
 const FOCUS_PADDING = 32
 
-/** Données d'une région telles que transmises à la navigation et au panneau d'infos. */
-const regionDetails = (shape, meta) => ({
-  ...shape.properties,
-  countryId: meta?.countryId ?? null,
-  type: meta?.type ?? 'Région',
-  license: meta?.license ?? null,
-})
-
-/** Cadrage animé sur la région ouverte, sinon sur le pays ouvert, sinon sur le continent. */
+/** Cadrage animé sur l'entité ouverte la plus fine (subdivision, région, pays), sinon sur le continent. */
 function useFocusView(focusShape, size) {
   const target = useMemo(
     () => (focusShape ? fitTransform(focusShape.bounds, freeArea(size, true), { padding: FOCUS_PADDING }) : IDENTITY),
@@ -36,49 +28,84 @@ function useFocusView(focusShape, size) {
   return useZoomTransition(target, size)
 }
 
-function ActiveTooltip({ active, shape, isRegion, meta, size }) {
+/** Couche et tracé d'une entité, en cherchant d'abord dans la couche la plus fine. */
+function findEntry(layers, id) {
+  for (const entry of [...layers].reverse()) {
+    const shape = entry.shapes.byId.get(id)
+    if (shape) return { ...entry, shape }
+  }
+  return undefined
+}
+
+function ActiveTooltip({ active, entry, size }) {
+  const details = entry.level === 'country' ? null : regionDetails(entry.shape, entry.meta)
   return (
     <Tooltip id={TOOLTIP_ID} x={active.x} y={active.y} bounds={size}>
-      {isRegion ? (
-        <RegionTooltip region={regionDetails(shape, meta)} countryName={countriesInfo[meta?.countryId]?.name ?? ''} />
+      {details ? (
+        <RegionTooltip region={details} countryName={contextLabel(details)} />
       ) : (
-        <CountryTooltip id={shape.id} name={shape.name} />
+        <CountryTooltip id={entry.shape.id} name={entry.shape.name} />
       )}
     </Tooltip>
   )
 }
 
+function LayerStatus({ regions, subdivisions }) {
+  if (subdivisions.status === 'loading' || subdivisions.status === 'error') {
+    return <RegionStatus status={subdivisions.status} label="subdivisions" onRetry={subdivisions.retry} />
+  }
+  return <RegionStatus status={regions.status} label="régions" onRetry={regions.retry} />
+}
+
 /**
  * Carte de l'Afrique : survol, infobulle, clavier, tactile, et zoom animé
- * sur le pays ouvert (dont les régions apparaissent) puis sur la région ouverte.
+ * de niveau en niveau (pays → régions → subdivisions).
  */
-function AfricaMap({ countryId = null, regionId = null, onCountryActivate, onRegionActivate }) {
+function AfricaMap({
+  countryId = null,
+  regionId = null,
+  subregionId = null,
+  onCountryActivate,
+  onRegionActivate,
+  onSubregionActivate,
+}) {
   const [containerRef, size] = useElementSize()
   const geo = useProjection(size.width, size.height)
   const { status, countries, retry } = useAfricaCountries()
-  const regionsState = useCountryRegions(countryId)
 
-  const countryLayer = useMapShapes(countries, geo)
-  const regionLayer = useMapShapes(regionsState.regions, geo)
+  const regionsState = useCountryRegions(countryId)
+  const countryShapes = useMapShapes(countries, geo)
+  const regionShapes = useMapShapes(regionsState.regions, geo)
+  const subdivisionsState = useRegionSubdivisions(countryId, regionShapes.byId.get(regionId)?.properties)
+  const subregionShapes = useMapShapes(subdivisionsState.regions, geo)
   const markers = useMemo(() => (geo ? findSmallFeatures(countries, geo.path) : []), [countries, geo])
 
-  const focusShape = regionLayer.byId.get(regionId) ?? countryLayer.byId.get(countryId)
+  // Couches visibles, de la plus large à la plus fine : les pays toujours, puis les régions
+  // du pays ouvert et les subdivisions de la région ouverte une fois chargées.
+  const layers = [
+    { level: 'country', shapes: countryShapes, openId: countryId, meta: null },
+    { level: 'region', shapes: regionShapes, openId: regionId, meta: regionsState.meta },
+    { level: 'subregion', shapes: subregionShapes, openId: subregionId, meta: subdivisionsState.meta },
+  ].filter((entry) => entry.level === 'country' || entry.shapes.shapes.length > 0)
+
+  const focusShape =
+    subregionShapes.byId.get(subregionId) ?? regionShapes.byId.get(regionId) ?? countryShapes.byId.get(countryId)
   const view = useFocusView(focusShape, size)
-  const findShape = (id) => regionLayer.byId.get(id) ?? countryLayer.byId.get(id)
 
   const { active, handlers } = useMapHover({
     onActivate: (id, level) => {
-      if (level !== 'region') onCountryActivate?.(id)
-      else if (regionLayer.byId.has(id)) onRegionActivate?.(regionDetails(regionLayer.byId.get(id), regionsState.meta))
+      const entry = findEntry(layers, id)
+      if (level === 'country') onCountryActivate?.(id)
+      else if (entry && level === 'region') onRegionActivate?.(regionDetails(entry.shape, entry.meta))
+      else if (entry && level === 'subregion') onSubregionActivate?.(regionDetails(entry.shape, entry.meta))
     },
     getAnchor: (id) => {
-      const centroid = findShape(id)?.centroid
+      const centroid = findEntry(layers, id)?.shape.centroid
       return centroid && [centroid[0] * view.k + view.x, centroid[1] * view.k + view.y]
     },
   })
-  const activeShape = active ? findShape(active.id) : undefined
-  const activeId = activeShape?.id ?? null
-  const hasRegions = regionLayer.shapes.length > 0
+  const activeEntry = active ? findEntry(layers, active.id) : undefined
+  const activeId = activeEntry?.shape.id ?? null
 
   return (
     <div ref={containerRef} className="africa-map">
@@ -86,14 +113,7 @@ function AfricaMap({ countryId = null, regionId = null, onCountryActivate, onReg
 
       {status === 'ready' && geo && (
         <svg
-          className={[
-            'africa-map__svg',
-            countryId && 'is-zoomed',
-            hasRegions && 'has-regions',
-            hasRegions && regionId && 'has-region-focus',
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          className={countryId ? 'africa-map__svg is-zoomed' : 'africa-map__svg'}
           viewBox={`0 0 ${size.width} ${size.height}`}
           role="group"
           aria-labelledby="africa-map-title"
@@ -101,42 +121,32 @@ function AfricaMap({ countryId = null, regionId = null, onCountryActivate, onReg
         >
           <title id="africa-map-title">Carte de l&apos;Afrique</title>
           <g className="map-viewport" transform={`translate(${view.x},${view.y}) scale(${view.k})`}>
-            <MapLayer
-              level="country"
-              shapes={countryLayer.shapes}
-              activeId={activeId}
-              selectedId={countryId}
-              focusId={countryId}
-              isTabbable={!countryId}
-              describedBy={TOOLTIP_ID}
-            />
-            {hasRegions && (
-              <MapLayer
-                level="region"
-                shapes={regionLayer.shapes}
-                activeId={activeId}
-                selectedId={regionId}
-                focusId={regionId}
-                describedBy={TOOLTIP_ID}
-              />
-            )}
-            {activeShape?.interactive && <path className="map-outline" d={activeShape.d} />}
+            {layers.map((entry, index) => {
+              const finer = layers[index + 1]
+              return (
+                <MapLayer
+                  key={entry.level}
+                  level={entry.level}
+                  shapes={entry.shapes.shapes}
+                  activeId={activeId}
+                  selectedId={entry.openId}
+                  focusId={entry.openId}
+                  isTabbable={!finer}
+                  isCovered={Boolean(finer)}
+                  isCoverFocused={Boolean(finer?.openId)}
+                  describedBy={TOOLTIP_ID}
+                />
+              )
+            })}
+            {activeEntry?.shape.interactive && <path className="map-outline" d={activeEntry.shape.d} />}
             {!countryId && <MarkerLayer markers={markers} activeId={activeId} selectedId={null} scale={view.k} />}
           </g>
         </svg>
       )}
 
-      {status === 'ready' && <RegionStatus status={regionsState.status} onRetry={regionsState.retry} />}
+      {status === 'ready' && <LayerStatus regions={regionsState} subdivisions={subdivisionsState} />}
 
-      {activeShape && (
-        <ActiveTooltip
-          active={active}
-          shape={activeShape}
-          isRegion={regionLayer.byId.has(activeShape.id)}
-          meta={regionsState.meta}
-          size={size}
-        />
-      )}
+      {activeEntry && <ActiveTooltip active={active} entry={activeEntry} size={size} />}
     </div>
   )
 }

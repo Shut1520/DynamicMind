@@ -1,6 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { clearGeoCache, loadAfricaCountries, loadCountryRegions } from '../../src/data/loaders.js'
+import {
+  clearGeoCache,
+  loadAfricaCountries,
+  loadCountryRegions,
+  loadRegionSubdivisions,
+} from '../../src/data/loaders.js'
 
 const topologyText = readFileSync(resolve(__dirname, '../../public/geo/africa.topo.json'), 'utf8')
 
@@ -70,6 +75,31 @@ describe('loadCountryRegions', () => {
 
   test('refuse un code pays invalide sans rien télécharger', async () => {
     await expect(loadCountryRegions('../secret')).rejects.toThrow(/code pays invalide/i)
+    expect(fetch).not.toHaveBeenCalled()
+  })
+})
+
+describe('loadRegionSubdivisions', () => {
+  const OUEST = '27767025B65871807342439'
+  const text = readFileSync(resolve(__dirname, `../../public/geo/adm2/CMR/${OUEST}.topo.json`), 'utf8')
+
+  beforeEach(() => {
+    clearGeoCache()
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => JSON.parse(text) })))
+  })
+
+  afterEach(() => vi.unstubAllGlobals())
+
+  test('charge les subdivisions d’une région avec leurs métadonnées', async () => {
+    const { regions, meta } = await loadRegionSubdivisions('CMR', OUEST)
+
+    expect(fetch).toHaveBeenCalledWith(`/geo/adm2/CMR/${OUEST}.topo.json`)
+    expect(regions.map((r) => r.properties.name)).toContain('Menoua')
+    expect(meta).toMatchObject({ parentName: 'Ouest', type: 'Département' })
+  })
+
+  test('refuse un identifiant de région invalide sans rien télécharger', async () => {
+    await expect(loadRegionSubdivisions('CMR', '../../etc')).rejects.toThrow(/identifiant de région invalide/i)
     expect(fetch).not.toHaveBeenCalled()
   })
 })

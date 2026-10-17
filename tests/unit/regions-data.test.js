@@ -5,7 +5,19 @@ import { feature } from 'topojson-client'
 import { AFRICAN_COUNTRY_CODES } from '../../src/data/africa-countries.js'
 
 const MAX_FILE_BYTES = 300 * 1024
-const REGION_TYPES = ['Wilaya', 'Région', 'Préfecture', 'Département', 'District', 'Comté', 'Gouvernorat', 'Province', 'État', 'Île']
+const REGION_TYPES = [
+  'Wilaya',
+  'Région',
+  'Préfecture',
+  'Département',
+  'District',
+  'Comté',
+  'Gouvernorat',
+  'Province',
+  'État',
+  'Île',
+  'Zone de gouvernement local',
+]
 
 const fileOf = (code) => resolve(__dirname, `../../public/geo/adm1/${code}.topo.json`)
 

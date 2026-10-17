@@ -13,19 +13,22 @@ export function MapStatus({ status, onRetry }) {
   )
 }
 
-/** Pastille discrète pour le chargement des régions d'un pays. */
-export function RegionStatus({ status, onRetry }) {
+/**
+ * Pastille discrète pour le chargement d'une couche (régions ou subdivisions).
+ * @param {{ status: string, label: string, onRetry: () => void }} props  `label` : « régions », « subdivisions »…
+ */
+export function RegionStatus({ status, label = 'régions', onRetry }) {
   if (status === 'loading') {
     return (
       <p className="map-chip" role="status">
-        Chargement des régions…
+        Chargement des {label}…
       </p>
     )
   }
   if (status === 'error') {
     return (
       <div className="map-chip" role="alert">
-        Régions indisponibles.
+        {label.charAt(0).toUpperCase() + label.slice(1)} indisponibles.
         <button type="button" onClick={onRetry}>
           Réessayer
         </button>

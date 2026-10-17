@@ -39,7 +39,7 @@ export function countrySheet(countryId) {
   }
 }
 
-/** Fiche d'une région (les informations absentes de la source sont omises). */
+/** Fiche d'une région ou d'une subdivision (les informations absentes de la source sont omises). */
 export function regionSheet(region) {
   const country = countriesInfo[region.countryId]
   const countryName = country?.name ?? ''
@@ -56,6 +56,7 @@ export function regionSheet(region) {
       ['Superficie', formatArea(region.area)],
       region.population && ['Densité', formatDensity(region.population, region.area)],
       region.iso && ['Code ISO', region.iso],
+      region.parentName && ['Rattachée à', region.parentName],
       ['Pays', countryName],
     ].filter(Boolean),
     sources: `Sources : geoBoundaries${region.license ? ` (licence : ${region.license})` : ''}, Wikidata.`,

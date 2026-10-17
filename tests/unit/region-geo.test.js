@@ -206,9 +206,58 @@ describe('translateRegionType (libellés irréguliers)', () => {
     ['Wilayat/State', 'Wilaya'],
     ['Regiões', 'Région'],
     ['region', 'Région'],
-    ['Local Government Areas', 'Région'],
+    ['Local Government Areas', 'Zone de gouvernement local'],
     ['Administrative regions and governate', 'Région'],
   ])('%s → %s', (source, expected) => {
     expect(translateRegionType(source)).toBe(expected)
+  })
+})
+
+describe('buildRegionTopology (options des subdivisions)', () => {
+  const meta = { countryId: 'CMR', type: 'Unknown', license: 'CC BY 4.0', source: 'geoBoundaries', year: 2020 }
+
+  test('indique combien de subdivisions chaque région possède', () => {
+    const topology = buildRegionTopology(normalizeRegions(GEOJSON, 'CMR'), new Map(), meta, {
+      subdivisionCounts: new Map([['A1', 5]]),
+    })
+    const byId = new Map(feature(topology, topology.objects.regions).features.map((f) => [f.properties.id, f.properties]))
+
+    expect(byId.get('A1').subdivisions).toBe(5)
+    expect(byId.get('A2').subdivisions).toBe(0)
+  })
+
+  test('utilise le libellé de repli pour un type inconnu et garde les métadonnées en plus', () => {
+    const topology = buildRegionTopology(normalizeRegions(GEOJSON, 'CMR'), new Map(), { ...meta, parentId: 'R1' }, {
+      typeFallback: 'Subdivision',
+    })
+
+    expect(topology.meta).toMatchObject({ type: 'Subdivision', parentId: 'R1' })
+  })
+})
+
+describe('îlots et contrôle final', () => {
+  // Îlot d'environ 100 m de côté (≈ 0,01 km²) : s'écraserait à la quantification.
+  const islet = [[[30, 10], [30.001, 10], [30.001, 10.001], [30, 10.001], [30, 10]]]
+
+  test('retire les îlots minuscules d’une entité en plusieurs morceaux', () => {
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [
+        region(
+          { shapeName: 'Côte', shapeID: 'C1' },
+          { type: 'MultiPolygon', coordinates: [ccwSquare(29, 9).coordinates, islet] },
+        ),
+      ],
+    }
+
+    const [coast] = normalizeRegions(geojson, 'TST')
+
+    expect(coast.geometry.coordinates).toHaveLength(1)
+  })
+
+  test('refuse de produire une TopoJSON contenant une géométrie inversée', () => {
+    const inverted = [{ ...normalizeRegions(GEOJSON, 'CMR')[0], geometry: ccwSquare(10, 5) }]
+
+    expect(() => buildRegionTopology(inverted, new Map(), { type: 'Region' })).toThrow(/Far North/)
   })
 })

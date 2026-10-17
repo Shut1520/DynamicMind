@@ -1,5 +1,6 @@
 // Préparation des régions (ADM1) issues de geoBoundaries, enrichies avec Wikidata.
 import { geoArea } from 'd3-geo'
+import { feature as toGeoJSON } from 'topojson-client'
 import { topology } from 'topojson-server'
 
 const QUANTIZATION = 1e5
@@ -10,20 +11,30 @@ const EARTH_RADIUS_KM = 6371.0088
 const REGION_TYPE_RULES = Object.freeze([
   [/wila?y/i, 'Wilaya'],
   [/r[eé]gi/i, 'Région'],
+  [/sub-?s?pr[eé]fect/i, 'Sous-préfecture'],
   [/pr[eé]fect/i, 'Préfecture'],
   [/d[eé]part/i, 'Département'],
   [/district/i, 'District'],
+  [/sub-?s?count/i, 'Sous-comté'],
   [/count(y|ies)|comt[eé]/i, 'Comté'],
+  [/local government/i, 'Zone de gouvernement local'],
   [/governo?r?ate/i, 'Gouvernorat'],
   [/province/i, 'Province'],
+  [/commune/i, 'Commune'],
+  [/municipal/i, 'Municipalité'],
+  [/cercle/i, 'Cercle'],
+  [/constituenc/i, 'Circonscription'],
+  [/territor/i, 'Territoire'],
+  [/freguesia|parish/i, 'Paroisse'],
   [/state|[eé]tat/i, 'État'],
   [/island/i, 'Île'],
 ])
 const DEFAULT_REGION_TYPE = 'Région'
 
-export function translateRegionType(type) {
+/** Libellé geoBoundaries → type en français ; `fallback` si le libellé n'est pas reconnu. */
+export function translateRegionType(type, fallback = DEFAULT_REGION_TYPE) {
   const rule = REGION_TYPE_RULES.find(([pattern]) => pattern.test(String(type)))
-  return rule ? rule[1] : DEFAULT_REGION_TYPE
+  return rule ? rule[1] : fallback
 }
 
 const reverseRings = (rings) => rings.map((ring) => [...ring].reverse())
@@ -54,6 +65,18 @@ const MIN_REGION_AREA_KM2 = 1
 const areaKm2 = (feature) => geoArea(feature) * EARTH_RADIUS_KM ** 2
 const isDegenerate = (feature) => geoArea(feature) > 2 * Math.PI || areaKm2(feature) < MIN_REGION_AREA_KM2
 
+// Les îlots de moins de 0,5 km² sont invisibles à l'écran mais s'écrasent à la quantification.
+const MIN_PART_AREA_KM2 = 0.5
+const partArea = (rings) => geoArea({ type: 'Polygon', coordinates: rings }) * EARTH_RADIUS_KM ** 2
+
+/** Retire les îlots minuscules d'un MultiPolygon (en gardant toujours le plus grand morceau). */
+function dropIslets(feature) {
+  if (feature.geometry?.type !== 'MultiPolygon') return feature
+  const parts = [...feature.geometry.coordinates].sort((a, b) => partArea(b) - partArea(a))
+  const kept = parts.filter((rings, index) => index === 0 || partArea(rings) >= MIN_PART_AREA_KM2)
+  return { ...feature, geometry: { ...feature.geometry, coordinates: kept } }
+}
+
 /**
  * Régions geoBoundaries → entités réorientées { id, iso, nameEn, area (km²) }.
  * Les géométries dégénérées (artefacts de la source) sont écartées.
@@ -68,15 +91,17 @@ export function normalizeRegions(geojson, countryId) {
     if (!isNonEmptyString(shapeID) || !isNonEmptyString(shapeName)) {
       throw new Error(`${countryId} : région n°${index + 1} sans identifiant ou sans nom`)
     }
-    const rewound = rewindForD3(source)
-    if (isDegenerate(rewound)) return []
+    // La taille de l'entité entière décide si c'est un artefact ; ses îlots ne sont retirés qu'ensuite.
+    const whole = rewindForD3(source)
+    if (isDegenerate(whole)) return []
+    const rewound = dropIslets(whole)
     return {
       type: 'Feature',
       properties: {
         id: shapeID,
         iso: isNonEmptyString(shapeISO) ? shapeISO : null,
         nameEn: shapeName.trim(),
-        area: Math.round(areaKm2(rewound)),
+        area: Math.round(areaKm2(whole)),
       },
       geometry: rewound.geometry,
     }
@@ -115,10 +140,18 @@ export function parseWikidataRegions(response) {
 }
 
 /**
- * TopoJSON (objet `regions`) d'un pays, avec noms français quand Wikidata les connaît.
- * Les métadonnées (type de région, licence, source) sont gardées dans `topology.meta`.
+ * TopoJSON (objet `regions`) d'un pays ou d'une région, avec noms français quand Wikidata les connaît.
+ * Les métadonnées (type, licence, source…) sont gardées dans `topology.meta`.
+ *
+ * @param {{ quantization?: number, typeFallback?: string, subdivisionCounts?: Map<string, number> }} [options]
+ *   `subdivisionCounts` : nombre de subdivisions de chaque entité (0 = dernier niveau disponible).
  */
-export function buildRegionTopology(regions, wikidataByIso, meta) {
+export function buildRegionTopology(
+  regions,
+  wikidataByIso,
+  meta,
+  { quantization = QUANTIZATION, typeFallback, subdivisionCounts = new Map() } = {},
+) {
   const extraOf = (properties) => (properties.iso && wikidataByIso.get(properties.iso)) || {}
 
   // Deux régions d'un même pays ne peuvent pas porter le même nom : en cas de collision
@@ -145,13 +178,23 @@ export function buildRegionTopology(regions, wikidataByIso, meta) {
         capitals: extra.capitals ?? [],
         population: extra.population ?? null,
         populationYear: extra.populationYear ?? null,
+        subdivisions: subdivisionCounts.get(properties.id) ?? 0,
       },
       geometry,
     }
   })
 
-  return {
-    ...topology({ regions: { type: 'FeatureCollection', features } }, QUANTIZATION),
-    meta: { ...meta, type: translateRegionType(meta.type) },
+  const built = topology({ regions: { type: 'FeatureCollection', features } }, quantization)
+  assertNoInvertedGeometry(built)
+
+  return { ...built, meta: { ...meta, type: translateRegionType(meta.type, typeFallback) } }
+}
+
+// Garde-fou : une géométrie qui couvre plus d'un hémisphère après quantification
+// serait dessinée par d3 comme « tout le globe sauf elle ». On refuse de la livrer.
+function assertNoInvertedGeometry(built) {
+  const inverted = toGeoJSON(built, built.objects.regions).features.find((f) => geoArea(f) > 2 * Math.PI)
+  if (inverted) {
+    throw new Error(`Géométrie inversée après quantification : ${inverted.properties.name}`)
   }
 }

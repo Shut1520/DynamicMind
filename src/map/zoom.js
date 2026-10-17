@@ -4,7 +4,8 @@ import { BREADCRUMB_SPACE, MOBILE_BREAKPOINT, PANEL_MARGIN, PANEL_WIDTH } from '
 export const IDENTITY = Object.freeze({ k: 1, x: 0, y: 0 })
 
 const DEFAULT_PADDING = 24
-const DEFAULT_MAX_SCALE = 40
+// Assez pour cadrer une petite subdivision (quartier d'une capitale) depuis la vue du continent.
+const DEFAULT_MAX_SCALE = 200
 
 /**
  * Transformation qui centre `bounds` ([[x0, y0], [x1, y1]], en px de carte)

@@ -37,13 +37,26 @@ test('le zoom est réellement progressif (images intermédiaires)', async ({ pag
   await page.goto('/')
   const viewport = page.getByRole('group', { name: MAP }).locator('g.map-viewport')
 
+  // On relève l'échelle à chaque image, dans le navigateur, pendant 1,5 s après le clic.
+  const sampling = viewport.evaluate(
+    (el) =>
+      new Promise((done) => {
+        const scales = []
+        const start = performance.now()
+        const sample = () => {
+          // translate(x, y) scale(k) : le coefficient « a » de la matrice SVG vaut k.
+          scales.push(el.transform.baseVal.consolidate()?.matrix.a ?? 1)
+          if (performance.now() - start < 1500) requestAnimationFrame(sample)
+          else done(scales)
+        }
+        requestAnimationFrame(sample)
+      }),
+  )
   await page.locator('path[data-id="NGA"]').click()
-  const scales = []
-  for (let i = 0; i < 12; i += 1) {
-    scales.push(await scaleOf(viewport))
-    await page.waitForTimeout(60)
-  }
+  const scales = await sampling
 
-  const intermediate = scales.filter((k) => k > 1.05 && k < Math.max(...scales) - 0.05)
-  expect(intermediate.length).toBeGreaterThan(0)
+  const final = scales.at(-1)
+  const intermediate = scales.filter((k) => k > 1.05 && k < final - 0.05)
+  expect(final).toBeGreaterThan(2)
+  expect(intermediate.length).toBeGreaterThan(3)
 })

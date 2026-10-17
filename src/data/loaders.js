@@ -3,6 +3,7 @@ import { feature } from 'topojson-client'
 const GEO_BASE = `${import.meta.env.BASE_URL}geo/`
 const AFRICA_URL = `${GEO_BASE}africa.topo.json`
 const COUNTRY_CODE = /^[A-Z]{3}$/
+const REGION_ID = /^[0-9A-Za-z-]+$/
 
 // Une promesse par URL : chaque fichier n'est téléchargé qu'une fois.
 const cache = new Map()
@@ -48,5 +49,17 @@ export async function loadCountryRegions(countryId) {
     throw new Error(`Code pays invalide : ${countryId}`)
   }
   const { features, meta } = await loadOnce(`${GEO_BASE}adm1/${countryId}.topo.json`, 'regions')
+  return { regions: features, meta }
+}
+
+/** Subdivisions (ADM2) d'une région, avec les métadonnées de la source (type, région parente…). */
+export async function loadRegionSubdivisions(countryId, regionId) {
+  if (!COUNTRY_CODE.test(String(countryId))) {
+    throw new Error(`Code pays invalide : ${countryId}`)
+  }
+  if (!REGION_ID.test(String(regionId))) {
+    throw new Error(`Identifiant de région invalide : ${regionId}`)
+  }
+  const { features, meta } = await loadOnce(`${GEO_BASE}adm2/${countryId}/${regionId}.topo.json`, 'regions')
   return { regions: features, meta }
 }
