@@ -45,7 +45,8 @@ function MapLayer({
             data-level={level}
             data-interactive={String(interactive)}
             aria-label={name}
-            role={interactive ? 'button' : undefined}
+            // Zone non cliquable (territoire contesté) : simple image nommée, hors de la tabulation.
+            role={interactive ? 'button' : 'img'}
             tabIndex={interactive ? (isTabbable ? 0 : -1) : undefined}
             aria-describedby={isActive ? describedBy : undefined}
             aria-pressed={interactive ? id === selectedId : undefined}

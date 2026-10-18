@@ -154,6 +154,17 @@ describe('AfricaMap', () => {
       expect(map.querySelectorAll('[tabindex="0"]')).toHaveLength(54)
       expect(country('SEN')).toHaveAccessibleName('Sénégal')
       expect(country('ESH')).not.toHaveAttribute('tabindex')
+      // Zone non cliquable : image nommée (un aria-label sans rôle est interdit sur un <path>).
+      expect(country('ESH')).toHaveAttribute('role', 'img')
+      expect(country('ESH')).toHaveAccessibleName('Sahara occidental')
+    })
+
+    test('ordre de tabulation alphabétique, du premier au dernier pays', async () => {
+      const { map } = await renderMap()
+      const names = [...map.querySelectorAll('[tabindex="0"]')].map((path) => path.getAttribute('aria-label'))
+
+      expect(names.slice(0, 3)).toEqual(['Afrique du Sud', 'Algérie', 'Angola'])
+      expect(names.at(-1)).toBe('Zimbabwe')
     })
 
     test('affiche l’infobulle au focus et la ferme avec Échap', async () => {

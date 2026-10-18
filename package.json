@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "e2e": "playwright test",
+    "e2e": "playwright test --project=chromium",
+    "e2e:all": "playwright test",
     "prepare:countries": "node scripts/prepare-countries.mjs",
     "prepare:info": "node scripts/prepare-info.mjs",
     "prepare:boundaries": "node scripts/prepare-boundaries.mjs"
@@ -24,6 +25,7 @@
     "topojson-client": "^3.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.64.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

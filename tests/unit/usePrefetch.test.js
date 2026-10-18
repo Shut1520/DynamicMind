@@ -55,6 +55,27 @@ describe('usePrefetch', () => {
     expect(first.load).not.toHaveBeenCalled()
   })
 
+  test('calcule les tracés pendant un temps mort du navigateur', async () => {
+    const idle = vi.fn()
+    vi.stubGlobal('requestIdleCallback', idle)
+    vi.stubGlobal('cancelIdleCallback', vi.fn())
+    const regions = [{ type: 'Feature', properties: { id: 'R1', name: 'R1' }, geometry: null }]
+    const hovered = { key: 'CMR', load: vi.fn(async () => ({ regions })) }
+    const path = Object.assign(vi.fn(() => 'M0,0'), { centroid: () => [0, 0], bounds: () => [[0, 0], [1, 1]] })
+
+    const { unmount } = renderHook(() => usePrefetch(hovered, { path }))
+    await vi.advanceTimersByTimeAsync(PREFETCH_DELAY_MS)
+
+    expect(idle).toHaveBeenCalledTimes(1)
+    expect(path).not.toHaveBeenCalled()
+    idle.mock.calls[0][0]()
+    expect(path).toHaveBeenCalledTimes(1)
+
+    unmount()
+    expect(window.cancelIdleCallback).toHaveBeenCalled()
+    vi.unstubAllGlobals()
+  })
+
   test('ignore un échec de chargement (l’ouverture réessaiera)', async () => {
     const failing = { key: 'GAB', load: vi.fn(async () => Promise.reject(new Error('réseau'))) }
     renderHook(() => usePrefetch(failing, geo))

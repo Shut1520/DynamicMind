@@ -3,7 +3,8 @@ import { expect, test } from '@playwright/test'
 const MAP = /carte de l'afrique/i
 const SETTLE_MS = 1100
 
-const scaleOf = (locator) => locator.evaluate((el) => el.transform.baseVal.consolidate()?.matrix.a ?? 1)
+// Lecture de k dans « translate(x,y) scale(k) », sans modifier l'attribut (contrairement à consolidate()).
+const scaleOf = (locator) => locator.evaluate((el) => Number(/scale\(([^)]+)\)/.exec(el.getAttribute('transform'))?.[1] ?? 1))
 
 async function openDrcRegion(page, name) {
   await page.setViewportSize({ width: 1440, height: 900 })
